@@ -139,5 +139,13 @@
   "vinicius": {
     "reference": 8,
     "note": "Original photograph, no identity or body edits"
+  },
+  "vinicius-laptop": {
+    "source": "vinicius_assets_completos.zip/02_recortes_transparentes/08_trabalhando_no_laptop.png",
+    "note": "Asset oficial; apenas redimensionamento proporcional e codificação WebP. Sem geração ou retoque."
+  },
+  "vinicius-escritorio": {
+    "source": "vinicius_assets_completos.zip/01_originais/03_original_escritorio_bracos_cruzados.png",
+    "note": "Asset oficial; apenas redimensionamento proporcional e codificação WebP. Sem geração ou retoque."
   }
 }
