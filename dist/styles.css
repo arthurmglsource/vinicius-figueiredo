@@ -119,3 +119,26 @@ html.lenis.lenis-smooth{scroll-behavior:auto!important}
 .menu-dialog nav{gap:14px;min-height:100%;height:auto}.menu-dialog nav a{font-size:clamp(26px,3vw,46px)}
 @media(max-width:1024px){.extension{padding:80px 8%}.extension-intro{margin-bottom:55px}.method{padding-bottom:0}.method-stage{padding:40px 7%}.plan-row{width:100%;margin-left:0!important}.plan-number{font-size:19vw}.plan-detail{padding:28px;gap:24px}.person-story{gap:6%}.person-context{width:83%;margin-top:45px}.principles{gap:7%}.principles-heading{top:90px}}
 @media(max-width:768px){.extension{padding:75px 8%}.extension h2{font-size:clamp(37px,6.6vw,52px)}.extension-intro{margin-bottom:44px}.extension-description{margin-top:25px}.method{padding-bottom:0}.method-track{margin:0 -3%}.method-stage{padding:15px 7% 32px}.method-step{padding:35px 0}.method-step h3{font-size:34px}.method-step p{font-size:17px;margin-top:20px}.step-index{margin-bottom:18px}.method-note{font-size:12px;margin-top:24px}.plan-row{grid-template-columns:1fr}.plan-number{font-size:100px;place-items:start;padding:25px 24px;border-radius:10px 10px 0 0}.plan-detail{padding:12px 24px 30px;border-radius:0 0 10px 10px}.plan-list{gap:18px}.plan-row{gap:0}.plan-detail h3{font-size:30px}.person-story{grid-template-columns:1fr;gap:45px}.person-main{max-width:480px}.person-copy>p:first-child{font-size:30px}.person-context{width:67%;max-width:340px;margin-top:38px;transform:rotate(2deg)}.principles{grid-template-columns:1fr;gap:48px}.principles-heading{position:static}.principle-card h3{font-size:32px;margin-top:30px}.principle-card{padding-bottom:25px}.menu-dialog nav{gap:13px}.menu-dialog nav a{font-size:28px}}
+
+/* Full hero signature, aligned below the watch in the unchanged portrait.
+   Desktop anchors retain the original 56.28vw stage; only its lower space grows. */
+@media(min-width:1025px){
+  .hero{height:60.6vw}
+  .hero-heading{top:16.57446vw}
+  .hero-monogram{top:11.256vw;height:36.8634vw}
+  .hero-portrait{top:4.67124vw}
+  .name-layer{top:47.85vw;bottom:auto}
+}
+@media(min-width:769px) and (max-width:1024px){
+  .hero{height:calc(129.5px + 58.86vw);min-height:650px}
+  .hero-heading{top:208px}
+  .hero-monogram{top:149.5px;height:425.75px}
+  .hero-portrait{top:97.5px}
+  .name-layer{top:calc(97.5px + 45.62vw + 8px);bottom:auto}
+}
+@media(min-width:501px) and (max-width:768px){
+  .name-layer{width:72%;left:14%;bottom:0}
+}
+@media(max-width:500px){
+  .name-layer{bottom:.5%}
+}

@@ -26,3 +26,11 @@ Revisão de 2 de outubro de 2026, no Safari, usando a implementação final em u
 - A preferência do sistema por movimento reduzido não foi alterada; o caminho JavaScript foi exercitado por simulação e as regras CSS foram revisadas.
 - Logos e mockups originais continuam limitados à resolução das referências recebidas.
 - O canal de contato precisa ser informado. O botão final permanece indisponível até configurar `contactUrl` em `dist/config.js`.
+
+## Correção da hero — 3 de outubro de 2026
+
+- Removidas as máscaras que ocultavam letras de VINICIUS. As duas linhas da assinatura ficam completas à frente do retrato.
+- Assinatura posicionada abaixo do relógio, com espaço adicional na base do desktop e tablet quando necessário. Foto, proporções, posição do retrato e demais seções preservadas.
+- Safari: 1920, 1440, 1280, 1024, 768, 600, 430 e 390 px. Nome completo dentro dos limites da hero em todas as larguras, sem overflow, erros registrados ou imagens quebradas.
+- Folga vertical medida entre a borda inferior do relógio no asset oficial e a tinta das letras: aproximadamente 10–29 px. Conferência visual adicional em desktop e mobile.
+- Hero WebP comparada em bytes com o commit anterior: idêntica.
