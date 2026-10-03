@@ -1,6 +1,6 @@
 # Verificação — Vinicius Figueiredo
 
-Revisão de 2 de outubro de 2026, no Safari, usando a implementação final em um servidor local.
+Registro histórico de 2 de outubro de 2026, seguido das revisões de 3/10. A auditoria da versão atual está no último bloco; os registros anteriores descrevem a versão existente na data de cada teste.
 
 ## Verificado
 
@@ -37,7 +37,7 @@ Revisão de 2 de outubro de 2026, no Safari, usando a implementação final em u
 
 ## Revisão dos 20 prints — 3 de outubro de 2026
 
-- Mapeamento PRINT → SEÇÃO → COMPORTAMENTO → ITEM registrado antes das alterações em `work/reference-sequence.md` no workspace.
+- Mapeamento PRINT → SEÇÃO → COMPORTAMENTO → ITEM registrado antes das alterações em `REFERENCE-SEQUENCE.md` (cópia do roteiro criado no workspace antes das alterações).
 - Contexto de especialidades e “Sistemas em escala” removidos. Empresas fictícias removidas do HTML, da navegação e dos assets.
 - Abordagem: linha de tempo única para abertura da máscara, desenho radial, título, texto e CTA.
 - Método: arco horário sincronizado ao scroll, índices de 1/4 a 4/4 e quatro conteúdos. Plano: deslocamento horizontal progressivo por linha no desktop.
@@ -49,8 +49,34 @@ Revisão de 2 de outubro de 2026, no Safari, usando a implementação final em u
 - Retomada: prévia local corrigida para evitar cache de CSS/JS; desenho radial com estado inicial explícito, entradas do fechamento com estado explícito e rotações duplicadas de parallax eliminadas. Sintaxe e validação estática verificadas novamente.
 - Safari reconectado em 3/10. Abordagem conferida em 0/25/50/75/100% e no retorno ao início. Método conferido na primeira, terceira e quarta etapas, incluindo retorno; arco corrigido para comprimento real em pixels, com `autoRound: false`. Raios laterais reposicionados.
 - Plano conferido no Safari em 1440 × 900 CSS: quatro etapas legíveis, progressão horizontal à esquerda e defasagem entre as linhas. Hero conferida visualmente, assinatura completa abaixo do relógio. Monitor: zero overflow, erros ou imagens quebradas, 38 ScrollTriggers.
-- Números: primeira e segunda pilhas conferidas visualmente em desktop, com imagens em camadas nítidas. Terceira pilha, interações, Missão/Visão/Valores, Princípios, fechamento e a auditoria responsiva desta revisão ainda precisam de conferência visual integral.
+- Números: primeira e segunda pilhas conferidas visualmente em desktop, com imagens em camadas nítidas. Naquele ponto, terceira pilha, interações, Missão/Visão/Valores, Princípios, fechamento e responsividade ainda aguardavam conferência; resultados da retomada final abaixo.
 - A sessão Safari teve interrupções por interação simultânea/troca de aba, não por bloqueio do Mac nesta retomada. O usuário pediu para continuar o código enquanto utiliza o Safari. Os resultados históricos de 2/10 acima não validam integralmente a revisão atual.
 - Limpeza final: estilos dos blocos removidos eliminados; descrição dos Princípios corrigida após inclusão do contador; controles das pilhas preservam o nome do painel ao abrir/fechar. Os três SVGs de painel somam aproximadamente 14 KB.
-- Depois dos ajustes finais, sintaxe JavaScript, estrutura de CSS, assets, âncoras, dimensões de imagens e hash da foto aprovada foram verificados novamente. Auditoria visual restante e publicação pendentes.
+- Depois dos ajustes finais, sintaxe JavaScript, estrutura de CSS, assets, âncoras, dimensões de imagens e hash da foto aprovada foram verificados novamente. A auditoria visual ainda estava pendente naquele ponto. A publicação permanece não autorizada nesta retomada.
 - Item 6 aguarda nomes reais e logos oficiais. Destino de contato continua pendente.
+
+## Finalização técnica após 06e0a07 — 3 de outubro de 2026
+
+- Retomada no commit indicado, sem alterar foto, assinatura ou composição aprovada da hero. Não houve publicação nesta retomada.
+- Altura da janela passou a integrar o ciclo de `gsap.matchMedia`: mudanças abaixo/acima de 650 px desmontam/reconstroem as cenas fixas de abordagem, método e fechamento.
+- Tipografia e espaçamentos das cenas fixas limitados também pela altura para preservar texto e CTA em desktop com janela baixa.
+- Etapas sobrepostas do método expõem apenas o conteúdo ativo à árvore de acessibilidade, inclusive ao voltar o scroll. Em mobile, movimento reduzido e fallback todas as etapas voltam ao fluxo acessível.
+- SplitText passou a ser opcional; falha desse plugin não desativa as demais animações. Limpeza dos eventos e observadores funciona mesmo sem GSAP/ScrollTrigger.
+- Reflow após fontes/carregamento usa uma atualização por frame; o ciclo cancela atualizações pendentes ao sair. Menu evita abertura/fechamento redundantes.
+- `node tests/motion-regression.cjs`: 19 verificações de lógica passaram, incluindo altura, largura, movimento reduzido, memória/ticker, BFCache, fontes, menu, âncoras, toque e pilhas. São testes com doubles de DOM/GSAP, sem comprovação de renderização visual.
+- Sintaxe, referências locais, âncoras, dimensões de imagens e ordem das onze seções passaram novamente. Auditoria visual final inicia somente depois desta revisão técnica.
+
+## Auditoria final local — 3 de outubro de 2026
+
+- Código concluído antes da auditoria. Nenhum push ou deploy executado.
+- Safari em 1440 × 900 CSS: serviços e desenho ciano por foco, abertura progressiva da abordagem, etapas e arco do método, quatro linhas do plano, três pilhas de números e abertura/fechamento pelo controle + conferidos.
+- Missão, Visão e Valores: introdução e três cartões conferidos. Princípios: composição editorial, coluna fixa no desktop, quatro cartões e descrições presentes e legíveis.
+- Fechamento conferido em 0/25/50/75/100% e no retorno: nome completo, separação lateral, quadro central, fluxo e gráfico. CTA final conferido após a saída da cena.
+- Desktop 1920 × 650: texto e CTA da abordagem e todo o quadro central do fechamento cabem na altura. Abaixo de 650 px, cenas retornam ao fluxo vertical e restauram acesso a todas as etapas.
+- Mobile 390 × 844 CSS: hero, serviços, abordagem, método e plano em fluxo vertical, diagrama de sistemas, três números/pilhas, cartões de missão/visão/valores, princípios, nome/quadro do fechamento e CTA inspecionados ao longo da página. Menu fecha por Escape e devolve o foco ao botão MENU.
+- Matriz atual de reflow: 390, 430, 600, 768, 1024, 1280, 1440 e 1920 px, incluindo mudanças com a página rolada. Zero overflow horizontal, erros JavaScript registrados ou imagens quebradas; assinatura dentro da hero, folga do relógio aproximadamente 10–29 px.
+- Movimento reduzido simulado: zero ScrollTriggers, loader encerrado, conteúdo em fluxo. Sem GSAP/ScrollTrigger/SplitText: conteúdo disponível e loader encerrado.
+- A auditoria identificou atraso de `aria-hidden` do método após reconstruir desktop com scroll avançado. Sincronização adicionada em `onRefresh`; reteste 1920 → 390 → 1920 confirmou somente a quarta etapa acessível quando o método está em 100%. Caso de regressão incluído entre as 19 verificações.
+- `node tests/motion-regression.cjs`, sintaxe JavaScript, validação estática e `git diff --check` passaram. Testes de lógica usam doubles; a conferência de renderização foi feita separadamente no Safari.
+- Permanecem os limites descritos acima: dispositivos físicos/toque, leitor de tela, comparação pixel a pixel e Core Web Vitals não foram medidos. Não há afirmação de equivalência pixel a pixel com a Vooban.
+- Únicas dependências de conteúdo: empresas reais/logos oficiais para o item 6 e canal de contato para ativar o CTA. Não foram criadas empresas nem destinos fictícios.

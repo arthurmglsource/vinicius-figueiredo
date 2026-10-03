@@ -4,6 +4,7 @@
   const all = selector => [...document.querySelectorAll(selector)];
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const events = new AbortController();
+  let disposed = false, introPlayed = false, refreshFrame, disposeMotion = () => {};
   const listen = (el, type, fn, options = {}) => el.addEventListener(type, fn, { ...options, signal: events.signal });
   const releaseIntro = () => {
     clearTimeout(window.vfIntroGuard);
@@ -12,8 +13,9 @@
   const menu = $('#menu-dialog');
   const toggles = all('[aria-controls="menu-dialog"]');
   let menuOpener, menuMotion, smoothScroll;
-  const closeMenu = () => menu.close();
+  const closeMenu = () => { if (menu.open) menu.close(); };
   toggles.forEach(button => listen(button, 'click', () => {
+    if (menu.open) return;
     menuOpener = button;
     menu.showModal();
     smoothScroll?.stop();
@@ -76,20 +78,42 @@
     floating.forEach(el => { el.classList.toggle('is-visible', shown); el.inert = !shown; });
   }, { threshold: .3 });
   observer.observe($('.hero'));
-  if (!window.gsap || !window.ScrollTrigger || !window.SplitText) { releaseIntro(); return; }
-  gsap.registerPlugin(ScrollTrigger, SplitText);
+  // Base interactions and observers clean up even when animation libraries fail.
+  listen(window, 'pagehide', e => {
+    if (e.persisted) return;
+    disposed = true;
+    cancelAnimationFrame(refreshFrame);
+    observer.disconnect();
+    menuMotion?.revert();
+    disposeMotion();
+    events.abort();
+    releaseIntro();
+  });
+  listen(window, 'pageshow', e => {
+    if (e.persisted) { releaseIntro(); window.ScrollTrigger?.refresh(); }
+  });
+  if (!window.gsap || !window.ScrollTrigger) { releaseIntro(); return; }
+  gsap.registerPlugin(ScrollTrigger);
+  if (window.SplitText) gsap.registerPlugin(SplitText);
   const mm = gsap.matchMedia();
-  let disposed = false, introPlayed = false;
+  disposeMotion = () => mm.revert();
+  const refreshGeometry = () => {
+    cancelAnimationFrame(refreshFrame);
+    refreshFrame = requestAnimationFrame(() => { if (!disposed) ScrollTrigger.refresh(); });
+  };
+  if (document.fonts) listen(document.fonts, 'loadingdone', refreshGeometry);
+  listen(window, 'load', refreshGeometry, { once: true });
   const lowPower = navigator.connection?.saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
   const enter = (trigger, start = 'top 91%') => ({ trigger, start, toggleActions: 'play none none none' });
   const clean = 'transform,opacity,filter,clipPath,willChange';
 
   // Bounded font wait: a slow connection must never hold the page behind a loader.
-  Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 250))]).then(() => {
+  Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(resolve => setTimeout(resolve, 250))]).then(() => {
     if (disposed) return;
-    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)' }, context => {
-      if (!context.conditions.motion) { releaseIntro(); return; }
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)', tall: '(min-height: 650px)' }, context => {
+      if (!context.conditions.motion) { menuMotion?.revert(); menuMotion = null; releaseIntro(); return; }
       const desktop = context.conditions.desktop && !lowPower;
+      const sequenced = desktop && context.conditions.tall;
       const splitters = [], restores = [], pointerEvents = new AbortController();
       const distance = desktop ? 32 : 18;
       let scrollFrame;
@@ -124,7 +148,7 @@
       } else releaseIntro();
 
       // SplitText keeps accessible source text and rebuilds line masks on reflow.
-      all('[data-lines]').forEach(el => {
+      if (window.SplitText) all('[data-lines]').forEach(el => {
         splitters.push(SplitText.create(el, {
           type: 'lines', mask: 'lines', autoSplit: true,
           onSplit(self) {
@@ -140,7 +164,7 @@
           .from(card.querySelectorAll('.service-label,h3,.service-arrow'), { y: 14, opacity: 0, duration: .5, stagger: .065, clearProps: clean }, '<+.14');
       });
       const approachTrack = $('.approach-track');
-      if (desktop && innerHeight >= 650) {
+      if (sequenced) {
         approachTrack.classList.add('is-opening');
         restores.push(() => approachTrack.classList.remove('is-opening'));
         gsap.set('.approach-line', { yPercent: 250 });
@@ -195,12 +219,23 @@
       // New method chapter: native sticky positioning, with one scroll timeline.
       const methodTrack = $('.method-track');
       const methodSteps = all('.method-step');
-      if (desktop && innerHeight >= 650) {
+      if (sequenced) {
         methodTrack.classList.add('is-sequenced');
         restores.push(() => methodTrack.classList.remove('is-sequenced'));
+        let activeStep = -1;
+        const syncMethod = time => {
+          const next = Math.min(methodSteps.length - 1, Math.floor(time + .18));
+          if (next === activeStep) return;
+          activeStep = next;
+          methodSteps.forEach((step, i) => step.setAttribute('aria-hidden', String(i !== next)));
+        };
+        syncMethod(0);
+        restores.push(() => methodSteps.forEach(step => step.removeAttribute('aria-hidden')));
         gsap.set(methodSteps.slice(1), { opacity: 0, y: 20, clipPath: 'inset(0 0 100% 0)' });
         const sequence = gsap.timeline({ scrollTrigger: { trigger: methodTrack,
-          start: 'top top', end: 'bottom bottom', scrub: .4, invalidateOnRefresh: true } });
+          start: 'top top', end: 'bottom bottom', scrub: .4, invalidateOnRefresh: true,
+          onRefresh(self) { syncMethod(self.animation?.time() || 0); } },
+          onUpdate() { syncMethod(this.time()); } });
         const arc = $('.method-progress'), circumference = arc.getTotalLength();
         gsap.set(arc, { strokeDasharray: circumference });
         sequence.fromTo(arc, { strokeDashoffset: circumference * .75 },
@@ -210,6 +245,7 @@
           sequence.to(step, { opacity: 0, y: -18, duration: .16, ease: 'power2.in' }, i + .68)
             .to(methodSteps[i + 1], { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: .18, ease: 'power3.out' }, i + .82);
         });
+        syncMethod(sequence.time());
       } else methodSteps.forEach(step => gsap.from(step, { y: 18, clipPath: 'inset(0 0 100% 0)', duration: .7, ease: 'power3.out', scrollTrigger: enter(step), clearProps: clean }));
       all('.plan-row').forEach((row, i) => {
         if (desktop) {
@@ -234,7 +270,7 @@
       });
 
       const closingTrack = $('.closing-track');
-      if (desktop && innerHeight >= 650) {
+      if (sequenced) {
         closingTrack.classList.add('is-opening');
         restores.push(() => closingTrack.classList.remove('is-opening'));
         gsap.set('.closing-flow span', { y: 18, opacity: 0 });
@@ -277,6 +313,7 @@
           listenPointer(button, 'pointerleave', () => { x(0); y(0); });
         });
       }
+      refreshGeometry();
       return () => {
         releaseIntro();
         pointerEvents.abort();
@@ -287,15 +324,5 @@
         restores.forEach(restore => restore());
       };
     });
-  });
-  listen(window, 'pageshow', e => { if (e.persisted) { releaseIntro(); ScrollTrigger.refresh(); } });
-  listen(window, 'pagehide', e => {
-    if (e.persisted) return;
-    disposed = true;
-    observer.disconnect();
-    menuMotion?.revert();
-    mm.revert();
-    events.abort();
-    releaseIntro();
   });
 })();

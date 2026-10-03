@@ -168,7 +168,11 @@ html.lenis.lenis-smooth{scroll-behavior:auto!important}
 .is-opening .approach-panel{height:100%;min-height:0;padding-top:clamp(100px,24svh,260px);padding-bottom:3svh}
 .is-opening .approach-meta{display:flex}
 .is-opening .approach-panel p{margin-top:clamp(40px,10svh,120px);width:min(48vw,690px)}
-.is-opening .approach-panel h2{font-size:clamp(42px,4.25vw,80px)}
+.is-opening .approach-panel h2{font-size:clamp(42px,min(4.25vw,8svh),80px)}
+.is-opening .approach-copy{font-size:clamp(16px,min(1.4vw,2.5svh),27px)}
+.is-opening .cream-button{font-size:clamp(14px,min(1.1vw,1.8svh),21px)}
+.is-opening .cream-button>span{padding:clamp(16px,min(1.4vw,2svh),27px) 2vw}
+.is-opening .cream-button>i{width:clamp(48px,min(4.1vw,7svh),80px)}
 @media(max-width:1024px){.approach-stage{padding:16px 0 44px}.approach-panel{min-height:620px;padding:60px 22px}.approach-line{display:inline}.approach-line+.approach-line::before{content:' '}}
 @media(prefers-reduced-motion:reduce){.approach-meta{display:none!important}}
 
@@ -266,7 +270,9 @@ html.lenis.lenis-smooth{scroll-behavior:auto!important}
 .closing-track.is-opening .closing-heading{position:absolute;left:2%;right:2%;top:50%;translate:0 -50%;width:96%}
 .closing-track.is-opening .closing-frame{width:min(72vw,1100px);height:min(78svh,710px);display:flex;flex-direction:column;justify-content:space-between;padding:32px 4%}
 .closing-track.is-opening .closing-chart{max-height:24svh}
-.closing-track.is-opening .closing-statement{margin:30px 0}
+.closing-track.is-opening .closing-statement{margin:clamp(18px,3svh,30px) 0;font-size:clamp(34px,min(4vw,6.5svh),70px)}
+.closing-track.is-opening .closing-flow span{padding:clamp(10px,1.5svh,15px) 20px}
+.closing-track.is-opening .closing-caption{margin-top:clamp(10px,2svh,20px)}
 .closing+.contact{padding-top:65px}
 @media(max-width:1024px){.closing-stage{min-height:0;padding:70px 8%}.closing-frame{padding:30px}.closing-flow{gap:8px}.closing-flow span{padding:12px;font-size:11px}}
 @media(max-width:768px){.closing{padding:30px 0 40px}.closing-stage{gap:40px;padding:45px 24px}.closing-frame{padding:25px 22px}.closing-frame-top{font-size:9px;flex-wrap:wrap}.closing-statement{font-size:37px;margin:35px 0}.closing-flow{display:grid;grid-template-columns:1fr 12px 1fr;gap:10px}.closing-flow i:nth-of-type(2){display:none}.closing-flow span{font-size:10px;padding:13px 9px;text-align:center}.closing-flow i:last-of-type{grid-column:2;grid-row:2}.closing-flow span:last-of-type{grid-column:3;grid-row:2}.closing-chart{margin-top:30px}.closing-caption{font-size:9px}.closing+.contact{padding-top:45px}}
