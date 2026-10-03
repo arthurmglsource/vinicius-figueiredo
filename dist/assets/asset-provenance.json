@@ -1,141 +1,4 @@
 {
-  "expertise": {
-    "reference": 2,
-    "crop": [
-      112,
-      588,
-      347,
-      885
-    ]
-  },
-  "client-orion": {
-    "reference": 4,
-    "crop": [
-      124,
-      314,
-      590,
-      505
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "client-vitta": {
-    "reference": 4,
-    "crop": [
-      604,
-      314,
-      1069,
-      505
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "client-atlas": {
-    "reference": 4,
-    "crop": [
-      1083,
-      314,
-      1549,
-      505
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "client-prime": {
-    "reference": 4,
-    "crop": [
-      124,
-      522,
-      590,
-      706
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "client-nexus": {
-    "reference": 4,
-    "crop": [
-      604,
-      522,
-      1069,
-      706
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "client-lumen": {
-    "reference": 4,
-    "crop": [
-      1083,
-      522,
-      1549,
-      706
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "client-pulse": {
-    "reference": 4,
-    "crop": [
-      386,
-      723,
-      830,
-      898
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "client-centrale": {
-    "reference": 4,
-    "crop": [
-      844,
-      723,
-      1287,
-      898
-    ],
-    "note": "Label rendered in HTML"
-  },
-  "systems-diagram": {
-    "reference": 5,
-    "crop": [
-      155,
-      208,
-      503,
-      505
-    ]
-  },
-  "systems-scale": {
-    "reference": 5,
-    "crop": [
-      654,
-      694,
-      1018,
-      941
-    ]
-  },
-  "campaigns": {
-    "reference": 6,
-    "crop": [
-      1090,
-      35,
-      1600,
-      337
-    ],
-    "note": "Exterior blue background removed; original artwork retained"
-  },
-  "crm": {
-    "reference": 6,
-    "crop": [
-      1085,
-      350,
-      1602,
-      636
-    ],
-    "note": "Exterior blue background removed; original artwork retained"
-  },
-  "automation": {
-    "reference": 6,
-    "crop": [
-      1090,
-      644,
-      1600,
-      919
-    ],
-    "note": "Exterior blue background removed; original artwork retained"
-  },
   "vinicius": {
     "reference": 8,
     "note": "Original photograph, no identity or body edits"
@@ -147,5 +10,21 @@
   "vinicius-escritorio": {
     "source": "vinicius_assets_completos.zip/01_originais/03_original_escritorio_bracos_cruzados.png",
     "note": "Asset oficial; apenas redimensionamento proporcional e codificação WebP. Sem geração ou retoque."
+  },
+  "systems-diagram": {
+    "source": "Inline SVG in index.html",
+    "note": "Diagrama vetorial adaptado ao contexto de mídia, dados, CRM e automação."
+  },
+  "media-panel": {
+    "source": "Original SVG created in this project",
+    "note": "Painel vetorial profissional, sem dados de clientes ou resultados comerciais inventados."
+  },
+  "crm-panel": {
+    "source": "Original SVG created in this project",
+    "note": "Painel vetorial profissional, sem dados de clientes ou resultados comerciais inventados."
+  },
+  "automation-panel": {
+    "source": "Original SVG created in this project",
+    "note": "Painel vetorial profissional, sem dados de clientes ou resultados comerciais inventados."
   }
 }

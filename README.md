@@ -1,6 +1,6 @@
 # Vinicius Figueiredo
 
-Site estático em português brasileiro. As sete seções aprovadas foram preservadas, com quatro novos blocos autorizados: Método, Plano de projeto, Sobre o Vinicius e Princípios de trabalho. Identidade: Royal Blue `#014BAA` e Light Cream `#F8F3F0`.
+Site estático em português brasileiro. Revisão orientada pelos 20 prints ordenados e pelos 11 itens enviados em 3 de outubro: serviços, abordagem, método, plano de projeto, sistemas, números, Missão/Visão/Valores, princípios e fechamento antes do CTA. A hero aprovada foi preservada. Identidade: Royal Blue `#014BAA` e Light Cream `#F8F3F0`.
 
 ## Executar
 
@@ -31,9 +31,13 @@ O arquivo da foto da hero permanece idêntico à versão aprovada. A hero usa lo
 
 O desktop com ponteiro preciso usa Lenis integrado ao ciclo de atualização do GSAP. Mobile, tablet, movimento reduzido e dispositivos com economia de dados ou até quatro núcleos usam rolagem nativa. O método tem progressão em quatro etapas com posicionamento sticky em telas amplas; nos demais casos, todas as etapas ficam disponíveis em sequência vertical. `prefers-reduced-motion` desativa as animações. As animações e os eventos são desfeitos nas mudanças de contexto e na saída da página.
 
-As duas fotos da nova seção Sobre vêm exclusivamente do pacote oficial fornecido. Foram redimensionadas proporcionalmente e codificadas em WebP, preservando rosto, corpo e expressão. São carregadas sob demanda e possuem dimensões reservadas.
+Os painéis de mídia, CRM e automação são SVGs originais, nítidos e sem métricas comerciais inventadas. Cada pilha contém três camadas reais, parallax sincronizado com o scroll e um controle de abertura acessível. Missão, Visão e Valores usam cartões editoriais sobre um fundo vetorial de conexões. Princípios usam composição editorial com cartões verticais contornados. O fechamento abre o nome completo e revela um painel de crescimento.
 
-Logos de clientes e ilustrações foram extraídos dos prints. A resolução desses elementos é limitada à referência recebida. O monograma foi vetorizado a partir dos contornos visíveis. A fonte Inter foi escolhida por proximidade visual; o arquivo da fonte original do layout não foi fornecido.
+## Empresas reais pendentes
+
+As oito marcas fictícias e seus arquivos foram removidos. A seção Clientes aguarda a lista de empresas reais e logos oficiais fornecidas ou confirmadas pelo usuário; não há clientes inventados publicados.
+
+O monograma foi vetorizado a partir dos contornos visíveis. A fonte Inter foi escolhida por proximidade visual; o arquivo da fonte original do layout não foi fornecido.
 
 ## Dependências locais
 

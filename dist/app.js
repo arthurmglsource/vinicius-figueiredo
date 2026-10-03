@@ -51,6 +51,25 @@
   } else {
     listen(contactButton, 'click', () => { $('#contact-status').textContent = 'O canal de contato será disponibilizado em breve.'; });
   }
+  // Touch mirrors the reference hover: first tap draws, second follows the link.
+  all('.service').forEach(card => {
+    listen(card, 'click', e => {
+      if (!matchMedia('(hover: none), (pointer: coarse)').matches || card.classList.contains('is-active')) return;
+      e.preventDefault();
+      all('.service.is-active').forEach(other => other.classList.remove('is-active'));
+      card.classList.add('is-active');
+    });
+    listen(card, 'blur', () => card.classList.remove('is-active'));
+  });
+  all('.stack-toggle').forEach(button => {
+    const subject = button.closest('.pillar-art').querySelector('.stack-layer-2').alt;
+    listen(button, 'click', () => {
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(open));
+      button.closest('.pillar-art').classList.toggle('is-expanded', open);
+      button.setAttribute('aria-label', (open ? 'Fechar' : 'Abrir') + ' composição: ' + subject);
+    });
+  });
   const floating = [$('.floating-nav'), $('.chat-link')];
   const observer = new IntersectionObserver(([entry]) => {
     const shown = !entry.isIntersecting;
@@ -115,47 +134,58 @@
         }));
       });
       all('.eyebrow').forEach(el => gsap.from(el, { clipPath: 'inset(0 100% 0 0)', duration: .7, ease: 'power3.out', scrollTrigger: enter(el), clearProps: clean }));
-      gsap.from('.expertise-context img', { clipPath: 'inset(0 0 100% 0)', scale: 1.025, duration: .9, ease: 'power3.inOut', scrollTrigger: enter('.expertise-context'), clearProps: clean });
       all('.service').forEach((card, i) => {
         gsap.timeline({ defaults: { ease: 'power3.out' }, scrollTrigger: enter(card) })
           .from(card, { clipPath: 'inset(0 0 100% 0 round 7px)', y: distance, duration: .72, delay: (i % 2) * .09, clearProps: clean })
           .from(card.querySelectorAll('.service-label,h3,.service-arrow'), { y: 14, opacity: 0, duration: .5, stagger: .065, clearProps: clean }, '<+.14');
       });
-      const approach = gsap.timeline({ scrollTrigger: enter('.approach-panel', 'top 85%'), defaults: { ease: 'power3.out' } });
-      if (desktop) {
-        gsap.fromTo('.approach-panel', { clipPath: 'inset(8% 36% 8% 36% round 15px)' },
-          { clipPath: 'inset(0% 0% 0% 0% round 15px)', ease: 'power2.inOut',
-            scrollTrigger: { trigger: '.approach', start: 'top 92%', end: 'top 18%', scrub: .45 } });
-      } else approach.from('.approach-panel', { clipPath: 'inset(8% 2% 8% 2% round 15px)', duration: .8, clearProps: clean });
-      approach.fromTo('.outer-rays line', { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .9, stagger: { amount: .35, from: 'center' }, clearProps: 'strokeDasharray,strokeDashoffset' }, .1)
-        .from('.inner-rays line', { scale: .7, opacity: 0, transformOrigin: 'center center', duration: .55, stagger: { amount: .45 }, clearProps: 'transform,opacity' }, .22)
-        .from('.cream-button', { y: 14, clipPath: 'inset(0 0 100% 0)', duration: .65, clearProps: clean }, .5);
-      if (desktop) gsap.to('.inner-rays', { rotation: 14, ease: 'none', scrollTrigger: { trigger: '.approach', start: 'top bottom', end: 'bottom top', scrub: 1 } });
-      all('.client').forEach((card, i) => {
-        gsap.timeline({ scrollTrigger: enter(card), defaults: { ease: 'power3.out' } })
-          .from(card, { clipPath: 'inset(0 0 100% 0 round 7px)', duration: .75, delay: (i % (desktop ? 3 : 2)) * .065, clearProps: clean })
-          .from(card.querySelector('img'), { y: 14, scale: .97, duration: .7, clearProps: clean }, '<+.08');
-      });
+      const approachTrack = $('.approach-track');
+      if (desktop && innerHeight >= 650) {
+        approachTrack.classList.add('is-opening');
+        restores.push(() => approachTrack.classList.remove('is-opening'));
+        gsap.set('.approach-line', { yPercent: 250 });
+        gsap.set('.inner-rays line,.outer-rays line', { strokeDasharray: (_, line) => line.getTotalLength(),
+          strokeDashoffset: (_, line) => line.getTotalLength(), opacity: 0 });
+        gsap.set('.approach-copy,.cream-button', { opacity: 0, y: 24 });
+        const opening = gsap.timeline({ scrollTrigger: { trigger: approachTrack,
+          start: 'top top', end: 'bottom bottom', scrub: .55, invalidateOnRefresh: true } });
+        opening.fromTo('.approach-panel', { clipPath: 'inset(20% 40% 20% 40% round 16px)' },
+          { clipPath: 'inset(0% 0% 0% 0% round 16px)', duration: 1.5, ease: 'power2.inOut' }, 0)
+          .to('.inner-rays line', { strokeDashoffset: 0, opacity: 1, duration: .4, stagger: { amount: 1.3 }, ease: 'none' }, 0)
+          .to('.outer-rays line', { strokeDashoffset: 0, opacity: 1, duration: .65, stagger: { amount: .35, from: 'center' }, ease: 'none' }, .65)
+          .to('.approach-line', { yPercent: 0, duration: .9, stagger: .1, ease: 'power3.out' }, .6)
+          .to('.approach-meta', { opacity: 0, duration: .2 }, .45)
+          .to('.approach-copy,.cream-button', { opacity: 1, y: 0, duration: .7, stagger: .12, ease: 'power3.out' }, 1.35);
+      } else {
+        gsap.timeline({ scrollTrigger: enter('.approach-panel'), defaults: { ease: 'power3.out' } })
+          .from('.approach-panel', { clipPath: 'inset(5% 2% 5% 2% round 15px)', duration: .8, clearProps: clean })
+          .from('.inner-rays line', { opacity: 0, duration: .5, stagger: { amount: .45 }, clearProps: clean }, .12)
+          .from('.approach-line,.approach-copy,.cream-button', { y: 18, opacity: 0, duration: .65, stagger: .08, clearProps: clean }, .25);
+      }
       gsap.from('#systems-heading', { clipPath: 'inset(0 0 100% 0)', y: 20, duration: .85, ease: 'power3.out', scrollTrigger: enter('#systems-heading'), clearProps: clean });
       gsap.from('.underlined', { '--line-scale': 0, duration: .7, ease: 'power3.inOut', scrollTrigger: enter('#systems-heading', 'top 65%') });
       const diagram = gsap.timeline({ scrollTrigger: enter('.systems-diagram'), defaults: { ease: 'power2.out' } });
       diagram.from('.system-hub', { scale: .7, transformOrigin: 'center center', opacity: 0, duration: .4, clearProps: 'transform,opacity' })
-        .fromTo('.system-connections path', { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: .8, stagger: .1, clearProps: 'strokeDasharray,strokeDashoffset' }, .15)
+        .fromTo('.system-connections path', { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, autoRound: false, duration: .8, stagger: .1, clearProps: 'strokeDasharray,strokeDashoffset' }, .15)
         .from('.system-node', { opacity: 0, scale: .93, transformOrigin: 'center center', duration: .5, stagger: .12, clearProps: 'transform,opacity' }, .32);
-      gsap.from('.systems-scale', { clipPath: 'inset(100% 0 0 0)', y: 20, duration: .95, ease: 'power3.out', scrollTrigger: enter('.systems-scale'), clearProps: clean });
+      if (desktop) {
+        $('.pillars').classList.add('has-parallax');
+        $('.purpose').classList.add('has-parallax');
+        restores.push(() => { $('.pillars').classList.remove('has-parallax'); $('.purpose').classList.remove('has-parallax'); });
+      }
       all('.pillar').forEach(row => {
         const number = row.querySelector('.pillar-number');
-        const original = number.textContent;
-        const target = parseInt(original, 10);
-        const count = { value: 0 };
-        number.setAttribute('aria-label', original);
-        restores.push(() => { number.textContent = original; number.style.minWidth = ''; });
-        const timeline = gsap.timeline({ scrollTrigger: enter(row, 'top 87%'), defaults: { ease: 'power3.out' } });
-        timeline.from(row, { '--rule-scale': 0, duration: .9 })
-          .from(number, { y: 22, clipPath: 'inset(0 0 100% 0)', filter: desktop ? 'blur(3px)' : 'none', duration: .8, clearProps: clean }, 0)
-          .to(count, { value: target, duration: 1.05, ease: 'power2.out', onStart() { number.style.minWidth = number.getBoundingClientRect().width + 'px'; }, onUpdate() { number.textContent = Math.round(count.value) + (original.includes('/') ? '/7' : ''); }, onComplete() { number.textContent = original; number.style.minWidth = ''; } }, 0)
-          .from(row.querySelector('p'), { y: 9, clipPath: 'inset(0 100% 0 0)', duration: .6, clearProps: clean }, .12)
-          .from(row.querySelector('.pillar-art'), { x: desktop ? 25 : 12, y: 15, scale: .97, rotation: desktop ? 1.4 : 0, clipPath: 'inset(0 0 100% 0)', duration: .95, clearProps: clean }, .1);
+        if (desktop) {
+          const motion = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 95%',
+            end: 'bottom 15%', scrub: .55, invalidateOnRefresh: true } });
+          motion.from(row, { '--rule-scale': 0, duration: .4 }, 0)
+            .from(number, { yPercent: 42, clipPath: 'inset(0 0 100% 0)', duration: .35, ease: 'power2.out' }, 0)
+            .from(row.querySelector('p'), { opacity: 0, y: 14, duration: .25 }, .08);
+          row.querySelectorAll('.stack-layer').forEach((layer, i) => {
+            motion.fromTo(layer, { yPercent: 14 + i * 5, rotation: [-8, 6, 3][i] },
+              { yPercent: -9 - i * 3, rotation: [-13, 8, -2][i], duration: 1, ease: 'none' }, 0);
+          });
+        } else gsap.from(row, { y: 20, opacity: .4, duration: .8, ease: 'power3.out', scrollTrigger: enter(row), clearProps: clean });
       });
       gsap.timeline({ scrollTrigger: enter('.contact'), defaults: { ease: 'power3.out' } })
         .from('.contact-rule', { scaleX: 0, transformOrigin: 'left center', duration: 1, clearProps: clean })
@@ -171,39 +201,57 @@
         gsap.set(methodSteps.slice(1), { opacity: 0, y: 20, clipPath: 'inset(0 0 100% 0)' });
         const sequence = gsap.timeline({ scrollTrigger: { trigger: methodTrack,
           start: 'top top', end: 'bottom bottom', scrub: .4, invalidateOnRefresh: true } });
-        sequence.fromTo('.method-progress', { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 4, ease: 'none' }, 0);
+        const arc = $('.method-progress'), circumference = arc.getTotalLength();
+        gsap.set(arc, { strokeDasharray: circumference });
+        sequence.fromTo(arc, { strokeDashoffset: circumference * .75 },
+          { strokeDashoffset: 0, autoRound: false, duration: 3, ease: 'none' }, 0)
+          .to({}, { duration: 1 }, 3);
         methodSteps.slice(0, -1).forEach((step, i) => {
-          sequence.to(step, { opacity: 0, y: -18, duration: .24, ease: 'power2.in' }, i + .72)
-            .to(methodSteps[i + 1], { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: .42, ease: 'power3.out' }, i + .91);
+          sequence.to(step, { opacity: 0, y: -18, duration: .16, ease: 'power2.in' }, i + .68)
+            .to(methodSteps[i + 1], { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: .18, ease: 'power3.out' }, i + .82);
         });
       } else methodSteps.forEach(step => gsap.from(step, { y: 18, clipPath: 'inset(0 0 100% 0)', duration: .7, ease: 'power3.out', scrollTrigger: enter(step), clearProps: clean }));
-      all('.plan-row').forEach(row => {
-        gsap.timeline({ defaults: { ease: 'power3.out' }, scrollTrigger: enter(row) })
-          .from(row.querySelector('.plan-number'), { clipPath: 'inset(0 0 100% 0 round 12px)', y: 20, duration: .85, clearProps: clean })
-          .from(row.querySelector('.plan-detail'), { clipPath: 'inset(0 100% 0 0 round 12px)', x: desktop ? 18 : 0, duration: .85, clearProps: clean }, .12);
+      all('.plan-row').forEach((row, i) => {
+        if (desktop) {
+          gsap.fromTo(row, { x: () => innerWidth * (.18 + i * .035) },
+            { x: 0, ease: 'none', scrollTrigger: { trigger: row,
+              start: 'top bottom', end: 'top 22%', scrub: .65, invalidateOnRefresh: true } });
+        } else gsap.from(row, { y: 18, opacity: .4, duration: .7,
+          ease: 'power3.out', scrollTrigger: enter(row), clearProps: clean });
       });
-      all('.person-main,.person-context').forEach((photo, i) => {
-        gsap.from(photo, { clipPath: 'inset(100% 0 0 0)', y: 24, duration: 1, ease: 'power3.inOut', scrollTrigger: enter(photo), clearProps: clean });
-        if (desktop) gsap.fromTo(photo.querySelector('img'), { y: 10 }, { y: -10, ease: 'none', scrollTrigger: { trigger: photo, start: 'top bottom', end: 'bottom top', scrub: .7 } });
+      all('.purpose-card').forEach((card, i) => {
+        if (desktop) gsap.fromTo(card, { y: 90, rotation: [-5, 4, -3][i] },
+          { y: -25, rotation: [-2, 2, -1][i], ease: 'none', scrollTrigger: { trigger: card,
+            start: 'top bottom', end: 'bottom 18%', scrub: .7, invalidateOnRefresh: true } });
+        else gsap.from(card, { y: 22, opacity: .35, duration: .75, scrollTrigger: enter(card), clearProps: clean });
       });
-      all('.principle-card').forEach(card => gsap.from(card, { y: 24, rotationX: desktop ? 5 : 0,
-        transformOrigin: 'center top', opacity: .3, duration: .9, ease: 'power3.out', scrollTrigger: enter(card), clearProps: clean }));
+      all('.principle-card').forEach(card => {
+        if (desktop) gsap.fromTo(card, { y: 35, opacity: .45 },
+          { y: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: card,
+            start: 'top 90%', end: 'top 35%', scrub: .6 } });
+        else gsap.from(card, { y: 20, opacity: .4, duration: .75,
+          ease: 'power3.out', scrollTrigger: enter(card), clearProps: clean });
+      });
+
+      const closingTrack = $('.closing-track');
+      if (desktop && innerHeight >= 650) {
+        closingTrack.classList.add('is-opening');
+        restores.push(() => closingTrack.classList.remove('is-opening'));
+        gsap.set('.closing-flow span', { y: 18, opacity: 0 });
+        const finale = gsap.timeline({ scrollTrigger: { trigger: closingTrack,
+          start: 'top top', end: 'bottom bottom', scrub: .65, invalidateOnRefresh: true } });
+        finale.to('.closing-left', { xPercent: -110, duration: 1.4, ease: 'power2.inOut' }, .05)
+          .to('.closing-right', { xPercent: 110, duration: 1.4, ease: 'power2.inOut' }, .05)
+          .fromTo('.closing-frame', { scale: .6, opacity: 0, clipPath: 'inset(18% 40% 18% 40% round 18px)' },
+            { scale: 1, opacity: 1, clipPath: 'inset(0% 0% 0% 0% round 18px)', duration: 1.2, ease: 'power2.inOut' }, .32)
+          .to('.closing-flow span', { y: 0, opacity: 1, stagger: .08, duration: .45 }, 1.1)
+          .fromTo('.closing-chart-line', { strokeDasharray: 1, strokeDashoffset: 1 },
+            { strokeDashoffset: 0, autoRound: false, duration: .7, ease: 'none' }, 1.2)
+          .to('.closing-frame', { y: -20, duration: .35, ease: 'none' }, 1.9);
+      } else gsap.from('.closing-frame', { y: 25, clipPath: 'inset(0 0 100% 0 round 16px)',
+        duration: .9, ease: 'power3.inOut', scrollTrigger: enter('.closing-frame'), clearProps: clean });
 
       if (desktop) {
-        // Perspective belongs to the image; the entrance animates its parent.
-        all('.pillar-art').forEach(card => {
-          const artwork = card.querySelector('img');
-          gsap.set(artwork, { transformPerspective: 900 });
-          const tiltX = gsap.quickTo(artwork, 'rotationX', { duration: .65, ease: 'power3.out' });
-          const tiltY = gsap.quickTo(artwork, 'rotationY', { duration: .65, ease: 'power3.out' });
-          listenPointer(card, 'pointermove', e => {
-            if (e.pointerType !== 'mouse') return;
-            const r = card.getBoundingClientRect();
-            tiltX((.5 - (e.clientY - r.top) / r.height) * 4);
-            tiltY(((e.clientX - r.left) / r.width - .5) * 5);
-          });
-          listenPointer(card, 'pointerleave', () => { tiltX(0); tiltY(0); });
-        });
         // Move SVG contents independently: the two name layers stay registered.
         const monogram = $('.hero-monogram path');
         const moveX = gsap.quickTo(monogram, 'x', { duration: .65, ease: 'power3.out' });
