@@ -275,24 +275,24 @@ html.lenis.lenis-smooth{scroll-behavior:auto!important}
 @media(max-width:1024px){.principles{gap:6%;padding-top:80px;padding-bottom:80px}.principle-card{padding:30px 26px;min-height:400px}.principles-count{font-size:150px}.principle-card h3{font-size:34px}}
 @media(max-width:768px){.principles{grid-template-columns:1fr;gap:35px;padding-top:75px;padding-bottom:75px}.principles-count{font-size:95px;margin-top:24px}.principle-card{min-height:0;padding:29px 25px}.principle-card h3{margin:32px 0 25px}.principles-list{gap:16px}.principles-heading{position:static}}
 
-/* Editorial finale: the attached composition stays intact at its original ratio. */
+/* Horizontal finale: one baseline, independent glyphs, untouched horizontal artwork. */
 .closing{position:relative;background:var(--blue);color:var(--cream);overflow:clip;padding:0}
-.closing-stage{position:relative;display:grid;justify-items:center;align-content:center;gap:45px;min-height:100svh;padding:65px 0}
-.closing-heading{width:104%;position:relative;z-index:3;pointer-events:none}
-.closing-heading svg{display:block;width:100%;height:auto;overflow:visible}
-.closing-heading text{fill:var(--cream);font:900 258px/1 Inter,Arial,sans-serif;letter-spacing:-8px}
-.closing-art-anchor{width:90vw;position:relative}
-.closing-art{position:relative;z-index:2;width:100%;aspect-ratio:1981/793;margin:0;overflow:hidden;border-radius:clamp(10px,1.5vw,28px);isolation:isolate}
-.closing-art-image{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto}
+.closing-stage{position:relative;display:grid;justify-items:center;align-content:center;gap:36px;min-height:100svh;padding:65px 0}
+.closing-heading{width:96%;position:relative;z-index:3;pointer-events:none}
+.closing-type{display:block;width:100%;height:clamp(140px,22vw,350px);overflow:visible}
+.closing-letter{fill:var(--cream);font:900 430px/1 Inter,Arial,sans-serif;letter-spacing:0}
+.closing-art-anchor{width:96vw;position:relative}
+.closing-art{position:relative;z-index:2;width:100%;aspect-ratio:1672/941;margin:0;overflow:hidden;isolation:isolate}
+.closing-art-image{display:block;width:100%;height:100%;object-fit:cover;object-position:60% 50%;image-rendering:auto}
 .closing-caption{position:relative;z-index:4;text-align:center;font:400 clamp(17px,1.4vw,24px)/1.35 Inter,Arial,sans-serif;letter-spacing:-.025em}
 .closing-track.is-opening .closing-stage{height:100svh;min-height:0;display:block;padding:0;overflow:clip}
-.closing-track.is-opening .closing-heading{position:absolute;left:-2%;top:50%;translate:0 -50%;width:104%}
-.closing-track.is-opening .closing-art-anchor{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90%,190svh)}
-.closing-track.is-opening .closing-caption{position:absolute;left:10%;right:10%;bottom:5svh}
+.closing-track.is-opening .closing-heading{position:absolute;left:2%;top:50%;translate:0 -50%;width:96%}
+.closing-track.is-opening .closing-art-anchor{position:absolute;inset:0;width:100%}
+.closing-track.is-opening .closing-art{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;height:100%;aspect-ratio:auto}
+.closing-track.is-opening .closing-caption{position:absolute;left:10%;right:10%;bottom:4svh;visibility:hidden}
 .closing+.contact{padding-top:65px}
-@media(max-width:1024px){.closing-stage{gap:35px;padding:50px 0}.closing-track.is-opening .closing-art-anchor{width:min(92%,190svh)}}
-@media(max-width:768px){.closing-stage{min-height:0;padding:80px 0 55px;gap:36px}.closing-heading{width:108%}.closing-art-anchor{width:94vw}.closing-art{border-radius:10px}.closing-caption{font-size:18px}.closing-track.is-opening .closing-heading{left:-4%;width:108%}.closing-track.is-opening .closing-art-anchor{width:94%}.closing-track.is-opening .closing-caption{bottom:14svh;font-size:18px}.closing+.contact{padding-top:45px}}
-@media(max-height:700px){.closing-track.is-opening .closing-art-anchor{top:46%}}
+@media(max-width:1024px){.closing-stage{gap:35px;padding:50px 0}}
+@media(max-width:768px){.closing-stage{min-height:0;padding:80px 0 55px;gap:36px}.closing-heading{width:96%}.closing-type{height:clamp(130px,32vw,220px)}.closing-caption{font-size:18px}.closing-track.is-opening .closing-art-image{object-position:62% 50%}.closing+.contact{padding-top:45px}}
 /* GSAP owns rotation only while desktop parallax is active. */
 .has-parallax .stack-layer,.has-parallax .purpose-card{rotate:0deg}
 

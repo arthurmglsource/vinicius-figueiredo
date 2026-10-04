@@ -1,19 +1,24 @@
-# Fechamento editorial — asset e sequência
+# Fechamento horizontal — mapeamento e asset
 
-Pedido de 4 de outubro de 2026. Principal: primeira imagem anexada (Vinicius + MacBook + VF), copiada integralmente para `dist/assets/vinicius-editorial-vf.png`. Nenhuma alteração, recomposição, filtro ou recorte no arquivo. SHA-256: `de0126c391d5231b767b3696d6ec7ca11a46284cfb0a25fac37196c03416d187`. Dimensões 1981 × 793; PNG original, aproximadamente 2,7 MB.
+Revisão de 4 de outubro de 2026. Referência: https://vooban.com/a-propos. As instruções atuais substituem a abertura vertical anterior. Nenhuma imagem, texto ou marca da Vooban é incorporada ao site.
 
-## Mapeamento dos novos anexos, na ordem
+## Anexos, na ordem enviada
 
-1. Arte editorial final — único asset visual da revelação.
-2–3. Retratos auxiliares — não utilizados para substituir ou recriar a arte principal.
-4. Estado inicial atual — nome completo monumental no azul.
-5–6. Quadro anterior — substituído pela imagem editorial; CTA posterior preservado.
-7. Vooban, estado aberto — referência de escala, abertura e composição central.
-8. Vooban, faixas tipográficas — referência para subdivisão visual das duas linhas.
+| Print | Seção / papel | Comportamento | Correção |
+|---|---|---|---|
+| 1 | Fechamento atual, inicial | Nome já legível em duas linhas | Iniciar glifos sobrepostos em uma baseline central |
+| 2 | Fechamento atual, intermediário | Letras se afastam verticalmente, arte pequena | Substituir por dispersão horizontal e reveal central |
+| 3 | Fechamento atual, avançado | Arte anterior com moldura cream | Usar a nova arte sem moldura acrescentada |
+| 4 | Fechamento atual, outro viewport | Faixas e duas linhas afastadas em Y | Remover faixas/duplicação, controlar cada letra em X |
+| 5 | Vooban, tipografia | Faixas de apresentação da referência | Referência de escala; não replicar a separação vertical rejeitada no pedido |
+| 6 | Vooban, reveal intermediário | Imagem nasce central, letras abrem lateralmente | Reveal e dispersão na mesma timeline de scroll |
+| 7 | Vooban, estágio avançado | Arte quase cobre viewport e letras nas bordas | Expandir quadro em largura e altura, dispersar letras para fora |
+| 8 | Nova arte horizontal | Vinicius, MacBook/Apple, VF, colagem azul | Asset principal, sem edição |
 
-Pedido escrito tem prioridade: abertura principalmente vertical, com deslocamento lateral discreto nas faixas, uma única timeline e pin de 200vh no desktop/tablet e 140vh no mobile. Fases: nome (0–6%), abertura (6–57%), arte (16–71%), micro parallax (71–83%), legenda/estabilização (78–100%).
+## Asset
 
-A proporção completa da imagem é preservada (contain), inclusive rosto, MacBook, Apple, VF e texturas. Largura final 90/92/94% por viewport. Sem rabiscos artificiais sobre o raster. Movimento reduzido, biblioteca indisponível, janela abaixo de 480px ou dispositivo com economia de recursos: conteúdo em fluxo normal, sem pin.
+`dist/assets/vinicius-editorial-horizontal.png`: PNG original copiado byte a byte do oitavo anexo. 1672 × 941; SHA-256 `2c897d22b0ee2f38a6522d49962b2c28b8958ac2141c4623dc5483d554a47960`. Sem retoque, filtro, distorção do rosto ou alteração da Apple. Object-fit cover apenas no enquadramento responsivo.
 
+## Sequência
 
-Referência de movimento: https://vooban.com/a-propos. Nenhum texto, imagem ou branding da Vooban foi copiado. Pin por transform evita o deslocamento observado ao alternar a posição fixed; o ponto inicial usa a posição nativa do documento para sobreviver ao reflow. Evidência e limites de validação registrados em QA.md.
+Uma timeline em gsap.context, scrub verdadeiro e pin com espaço reservado. Glifos em uma única baseline: sobreposição central → abertura horizontal parcialmente sobreposta → nome aberto → dispersão para as bordas. Arte nasce pequena no centro e cresce em largura e altura até 100vw × 100svh no desktop. No mobile, amplitude reduzida e altura final de 68svh para manter rosto e Apple no enquadramento. Reduced motion e bibliotecas indisponíveis: nome legível e arte em fluxo estático.

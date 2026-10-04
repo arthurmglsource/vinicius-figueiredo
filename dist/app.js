@@ -348,35 +348,67 @@
 
       const closingTrack = $('.closing-track');
       const closingStage = $('.closing-stage');
-      if (context.conditions.closingRoom && !lowPower) {
+      if (context.conditions.closingRoom) {
         const mobileFinale = context.conditions.closingMobile;
-        closingTrack.classList.add('is-opening');
-        const movingParts = all('.closing-name-top,.closing-name-bottom,.closing-band,.closing-art,.closing-art-image,.closing-caption');
-        const hintCompositing = active => movingParts.forEach(el => { el.style.willChange = active ? 'transform' : ''; });
-        restores.push(() => { closingTrack.classList.remove('is-opening'); hintCompositing(false); });
-        // One reversible timeline owns name, reveal, parallax and the final hold.
-        // The spacer reserves the entire scroll distance; image dimensions reserve its geometry.
-        const finale = gsap.timeline({ scrollTrigger: { id: 'vf-editorial-finale', trigger: closingTrack,
-          // Read the native document position after a breakpoint scroll clamp.
-          start: () => closingTrack.getBoundingClientRect().top + window.scrollY,
-          end: () => '+=' + Math.round(innerHeight * (mobileFinale ? 1.4 : 2)),
-          pin: closingStage, pinType: 'transform', pinSpacing: true, anticipatePin: 1, scrub: .65, invalidateOnRefresh: true,
-          onToggle: self => hintCompositing(self.isActive) } });
-        finale.to('.closing-name-top', { y: mobileFinale ? -460 : -410, duration: 1.28, ease: 'power2.inOut' }, .08)
-          .to('.closing-name-bottom', { y: mobileFinale ? 460 : 410, duration: 1.28, ease: 'power2.inOut' }, .08)
-          .to('.closing-band--1', { x: mobileFinale ? -14 : -56, duration: 1.12, ease: 'power2.inOut' }, .16)
-          .to('.closing-band--3', { x: mobileFinale ? 14 : 56, duration: 1.12, ease: 'power2.inOut' }, .16)
-          .fromTo('.closing-art', { scale: .44, opacity: 0, y: 12,
-            clipPath: 'inset(25% 30% 25% 30% round 18px)' },
-            { scale: 1, opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0% round 18px)',
-              duration: 1.32, ease: 'power2.inOut' }, .38)
-          .fromTo('.closing-art-image', { scale: 1.06 }, { scale: 1, duration: 1.32, ease: 'power2.out' }, .38)
-          .to('.closing-art', { y: mobileFinale ? -4 : -8, duration: .3, ease: 'sine.inOut' }, 1.7)
-          .fromTo('.closing-caption', { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: .3, ease: 'power2.out' }, 1.86)
-          .to({}, { duration: .24 }, 2.16);
-      } else gsap.from('.closing-art', { y: 12, opacity: .5, duration: .75,
-        ease: 'power2.out', scrollTrigger: enter('.closing-art'), clearProps: clean });
+        // Nested context scopes every finale tween and reverts it on breakpoint/exit.
+        const closingContext = gsap.context(() => {
+          const letters = all('.closing-letter');
+          const type = $('.closing-type');
+          const heading = $('.closing-heading');
+          const art = $('.closing-art');
+          const originalViewBox = type.getAttribute('viewBox');
+          const originalX = letters.map(letter => letter.getAttribute('x'));
+          let centers = [], nameWidth = 1;
+          const measureName = () => {
+            const widths = letters.map(letter => letter.getComputedTextLength());
+            let cursor = 0;
+            centers = widths.map((width, i) => {
+              if (i === 8) cursor += 130; // The space between the two words.
+              const center = cursor + width / 2;
+              letters[i].setAttribute('x', center);
+              cursor += width + 8;
+              return center;
+            });
+            nameWidth = cursor;
+            type.setAttribute('viewBox', `0 0 ${nameWidth} 600`);
+          };
+          measureName();
+          closingTrack.classList.add('is-opening');
+          const movingParts = [...letters, heading, art];
+          const hintCompositing = active => movingParts.forEach(el => { el.style.willChange = active ? 'transform' : ''; });
+          restores.push(() => {
+            closingContext.revert();
+            closingTrack.classList.remove('is-opening');
+            hintCompositing(false);
+            type.setAttribute('viewBox', originalViewBox);
+            letters.forEach((letter, i) => letter.setAttribute('x', originalX[i]));
+          });
+          // No time-based entrance: scroll owns compression, opening and the full-bleed reveal.
+          const finale = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: {
+            id: 'vf-editorial-finale', trigger: closingTrack,
+            start: () => closingTrack.getBoundingClientRect().top + window.scrollY,
+            end: () => '+=' + Math.round(innerHeight * (mobileFinale ? 2 : 2.8)),
+            pin: closingStage, pinType: 'transform', pinSpacing: true, anticipatePin: 1,
+            scrub: true, invalidateOnRefresh: true,
+            onRefreshInit: measureName, onToggle: self => hintCompositing(self.isActive)
+          } });
+          finale.fromTo(letters,
+              { x: i => (nameWidth / 2 - centers[i]) * .985 },
+              { x: 0, duration: .5 }, .05)
+            .fromTo(heading, { scale: mobileFinale ? 1.5 : 1.65, opacity: 1, transformOrigin: '50% 50%' },
+              { scale: 1, duration: .5 }, .05)
+            .fromTo(art, { width: '18%', height: mobileFinale ? '12%' : '18%', opacity: 0,
+              clipPath: 'inset(12% 12% 12% 12% round 10px)' },
+              { width: '44%', height: mobileFinale ? '26%' : '44%', opacity: 1,
+                clipPath: 'inset(0% 0% 0% 0% round 10px)', duration: .27 }, .28)
+            .to(letters, { x: i => (i < 8 ? -1 : 1) * nameWidth * (mobileFinale ? .58 : .68),
+              duration: .3 }, .58)
+            .to(art, { width: '100%', height: mobileFinale ? '68%' : '100%',
+              clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: .36 }, .57)
+            .to(heading, { opacity: 0, duration: .12 }, .81)
+            .to({}, { duration: .07 }, .93);
+        }, closingTrack);
+      }
 
       all('.footer-main,.footer-bottom').forEach(part => gsap.from(part, { y: 10, opacity: 0,
         duration: .7, ease: 'power2.out', scrollTrigger: enter(part, 'top 96%'), clearProps: clean }));

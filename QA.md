@@ -137,3 +137,18 @@ Registro histórico de 2 de outubro de 2026, seguido das revisões de 3/10. A au
 - Instagram e LinkedIn reproduzem os endereços fornecidos no preview aprovado, com target blank e noopener noreferrer. Instagram limitou a consulta automática e LinkedIn respondeu com bloqueio 999; existência/disponibilidade externa dos perfis não confirmada nesta sessão.
 - MGL aponta para https://www.mglgrowth.eu/, fornecido pelo proprietário após a auditoria inicial, com abertura em nova aba, noopener noreferrer e indicação acessível. Destino respondeu HTTP 200; href, target, rel, ausência de underline permanente e clique inspecionados no navegador. Captura em ../footer-qa/mgl-link.png. Sem alteração no layout ou no CTA.
 - Sintaxe, validação estática de âncoras/assets/HTTP, diff e 34 regressões de lógica passaram. Provas em ../footer-qa/ (desktop.png, mobile-bottom.png e navigation.json). Nenhum push ou deploy.
+
+## Fechamento — correção horizontal, 4 de outubro de 2026
+
+Esta revisão substitui a abertura vertical descrita na auditoria anterior do fechamento.
+
+- Escopo comparado em bytes com b94575a: outras 11 seções, header, menu, CTA, footer e respectivos CSS/JS preservados. O preload alterado refere-se exclusivamente à nova arte final. Tokens e tipografia global intactos.
+- Oito anexos mapeados na ordem enviada em CLOSING-ASSET.md. O oitavo PNG, 1672×941, foi copiado sem edição; hash conferido com a origem. Rosto, MacBook e Apple preservados; apenas enquadramento responsivo com cover.
+- Dezoito glifos independentes em uma baseline. Começam sobrepostos no centro; abrem em X com sobreposição intermediária; o nome cabe em 96% da largura; depois as duas palavras se afastam para as bordas. SVG com proporções preservadas, sem esticar os glifos. Nenhum tween em Y nas letras.
+- Uma timeline com defaults ease:none, scrub:true, pin por transform e espaço reservado. Duração 280vh desktop/tablet e 200vh até 768px; crescimento central da arte até 100%×100% da viewport no desktop. Mobile: largura total e 68svh de altura, preservando rosto e Apple. Estado final retido antes de liberar o pin e seguir ao CTA existente.
+- gsap.context dedicado e revert no lifecycle de matchMedia/saída. Medidas dos glifos refeitas no refresh; viewBox e coordenadas originais restaurados no cleanup. Will-change apenas durante o pin ativo. Timeline vertical e trigger alternativo antigos removidos.
+- Safari e Google Chrome nativos no Mac: 1440×900 CSS e 390×844 CSS; estados inicial, intermediário e final capturados, incluindo retorno ao início e reconstrução desktop→mobile. Conteúdo central, baseline e enquadramento inspecionados. O painel local de auditoria foi recolhido para não cobrir o iframe.
+- Auditoria adicional no navegador integrado: 0/25/50/75/100%, retorno a 0%, 1024×576, 768×844, 390×844 e reconstrução em 1440×810. Um único pin-spacer nesta seção; telemetria aponta um trigger final. Topo do pin entre -0,18 e +0,49px; overflow horizontal zero. Em 1440×900, arte final medida em 1440×900px.
+- Movimento reduzido simulado e ausência de GSAP/ScrollTrigger: nome estático legível, arte em proporção original e legenda disponíveis, sem pin-spacer e sem overflow. Preferência real do sistema não alterada.
+- 37 regressões de lógica com doubles passaram, incluindo sobreposição, dispersão horizontal, scrub, imagem final, cleanup e retorno ao fluxo. Sintaxe JavaScript, assets/HTTP, âncoras, dimensões de imagens, sequência de 12 seções, hash e diff passaram. Zero erros registrados na prévia durante a matriz.
+- Capturas e leituras em ../horizontal-closing-qa/. São testes de larguras CSS no computador, sem dispositivos físicos, leitor de tela ou métricas de produção. Sem promessa de equivalência pixel a pixel da referência. Nenhum push ou deploy.
