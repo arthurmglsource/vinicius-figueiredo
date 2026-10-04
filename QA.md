@@ -126,3 +126,14 @@ Registro histórico de 2 de outubro de 2026, seguido das revisões de 3/10. A au
 - Auditoria no navegador integrado em 1440, 1024, 768 e 390px CSS: seis logos carregados, grid correto, nenhuma imagem cortada, zero overflow/erros. Desktop: cards 401,3×164,5px, proporção 466:191; mobile 390: cards 166×103,75px, proporção 1,6. Microlegenda Minas conferida no hover/foco desktop e foco mobile, inteiramente dentro do card e sem sobrepor o nome.
 - Sintaxe, validação de HTML/âncoras/assets, diff e 31 regressões existentes passaram. HTML das outras 11 seções preservado byte a byte; regras/animações externas à seção preservadas, incluindo o espaçamento já existente de Sistemas no mobile.
 - Capturas e leituras em ../experience-grid-qa/. Teste de larguras no computador, sem dispositivos físicos. Sem push ou publicação.
+
+
+## Footer editorial — 4 de outubro de 2026
+
+- Footer novo imediatamente após o CTA existente: cream, divisórias sutis, três colunas no desktop e fluxo empilhado no mobile. A remoção do novo footer do HTML resulta no arquivo anterior byte a byte; CSS anterior preservado integralmente e configuração de contato inalterada.
+- Ícones SVG acessíveis, foco visível, setas no hover e entrada de 10px/fade no lifecycle GSAP existente. Movimento reduzido e ausência de GSAP/ScrollTrigger mantêm todo o conteúdo visível.
+- Início, Especialidades, Sistemas, Experiências, Sobre e Contato testados por clique real no navegador integrado em desktop 1440px e mobile 390px. Seis destinos corretos e alinhados ao scroll-padding; Lenis suave no desktop, nativo no mobile, imediato com movimento reduzido. Cliques modificados conservam o comportamento padrão.
+- Desktop 1440, tablet 1024 e mobile 390px: colunas, hierarquia, ícones, divisórias e URLs conferidos; zero overflow horizontal e erros registrados. Touch targets de pelo menos 44px no mobile. Sem testes em aparelhos físicos.
+- Instagram e LinkedIn reproduzem os endereços fornecidos no preview aprovado, com target blank e noopener noreferrer. Instagram limitou a consulta automática e LinkedIn respondeu com bloqueio 999; existência/disponibilidade externa dos perfis não confirmada nesta sessão.
+- MGL permanece como texto em peso forte: URL oficial ausente no projeto e solicitada ao proprietário. Não há endereço fictício ou link vazio. Este é o único requisito pendente do footer.
+- Sintaxe, validação estática de âncoras/assets/HTTP, diff e 34 regressões de lógica passaram. Provas em ../footer-qa/ (desktop.png, mobile-bottom.png e navigation.json). Nenhum push ou deploy.

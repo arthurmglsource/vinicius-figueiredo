@@ -53,6 +53,23 @@
   } else {
     listen(contactButton, 'click', () => { $('#contact-status').textContent = 'O canal de contato será disponibilizado em breve.'; });
   }
+  // Footer anchors keep smooth navigation independent of the menu's immediate hash handling.
+  all('.footer-nav a').forEach(link => {
+    const hash = '#' + link.getAttribute('data-section');
+    link.setAttribute('href', hash);
+    listen(link, 'click', e => {
+      if (e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const target = document.getElementById(hash.slice(1));
+      if (!target) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const offset = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      if (location.hash !== hash) window.history.pushState(null, '', hash);
+      if (smoothScroll && !reduced()) smoothScroll.scrollTo(target, { duration: 1.05, force: true });
+      else window.scrollTo({ top: window.scrollY + target.getBoundingClientRect().top - offset,
+        behavior: reduced() ? 'auto' : 'smooth' });
+    });
+  });
   // Touch mirrors the reference hover: first tap draws, second follows the link.
   all('.service').forEach(card => {
     listen(card, 'click', e => {
@@ -360,6 +377,9 @@
           .to({}, { duration: .24 }, 2.16);
       } else gsap.from('.closing-art', { y: 12, opacity: .5, duration: .75,
         ease: 'power2.out', scrollTrigger: enter('.closing-art'), clearProps: clean });
+
+      all('.footer-main,.footer-bottom').forEach(part => gsap.from(part, { y: 10, opacity: 0,
+        duration: .7, ease: 'power2.out', scrollTrigger: enter(part, 'top 96%'), clearProps: clean }));
 
       if (desktop) {
         // Move SVG contents independently: the two name layers stay registered.

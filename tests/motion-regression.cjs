@@ -29,6 +29,9 @@ async function boot(options={}) {
   doc.fonts=new Element('fonts');doc.fonts.ready=Promise.resolve();
   const toggles=many('[aria-controls="menu-dialog"]',2), services=many('.service',4), steps=many('.method-step',4), stacks=many('.stack-toggle',3);
   many('a[href="#contact"]',2);many('[data-lines]',1);many('.eyebrow',2);many('.closing-name-top,.closing-name-bottom,.closing-band,.closing-art,.closing-art-image,.closing-caption',6);many('.plan-row',4);many('.purpose-card',3);many('.principle-card',4);
+    const footerLinks=many('.footer-nav a',6);
+  ['home','expertise','systems','experiencias','vinicius','contact'].forEach((id,i)=>footerLinks[i].setAttribute('data-section',id));
+  many('.footer-main,.footer-bottom',2);
   many('.pillar',3).forEach(row=>{row.querySelectorAll=s=>s==='.stack-layer'?Array.from({length:3},(_,i)=>row.querySelector(s+i)):[row.querySelector(s)];});
   stacks.forEach((button,i)=>{button.parent=new Element('art'+i);button.parent.querySelector('.stack-layer-2').alt='panel'+i;});
   const timers=new Map(), raf=new Map(), timelines=[], colorTweens=[], ticks=new Set(), lenis=[], splitters=[];
@@ -45,7 +48,9 @@ async function boot(options={}) {
   const blueSurface=new Element('blue section'),lightSurface=new Element('light section');
   blueSurface.backgroundColor='rgb(1, 75, 170)';lightSurface.backgroundColor='rgb(248, 243, 240)';
   let probe=()=>[blueSurface];doc.elementsFromPoint=(x,y)=>probe(x,y);
-  context.getComputedStyle=el=>({backgroundColor:el.backgroundColor||'rgba(0, 0, 0, 0)'});
+  context.getComputedStyle=el=>({backgroundColor:el.backgroundColor||'rgba(0, 0, 0, 0)',scrollPaddingTop:'22px'});
+  window.history={pushState:(state,title,hash)=>{context.location.hash=hash;window.lastHash=hash;}};
+  window.scrollTo=opts=>{window.lastScroll=opts;};
   Object.assign(window,context);
   if(options.noGsap)delete window.gsap;
   if(options.noTrigger)delete window.ScrollTrigger;
@@ -53,11 +58,29 @@ async function boot(options={}) {
   vm.runInNewContext(source,context,{filename:'app.js'});
   await Promise.resolve();await Promise.resolve();await Promise.resolve();
   const flush=()=>{for(const fn of raf.values())fn();raf.clear();};
-  return {get,many,groups,doc,window,toggles,services,steps,stacks,timelines,colorTweens,blueSurface,lightSurface,setProbe:fn=>{probe=fn;},ticks,lenis,splitters,flags,mm,flush,context,raf,get refreshes(){return refreshes;},get disconnected(){return observerDisconnected;}};
+  return {get,many,groups,doc,window,toggles,services,steps,stacks,footerLinks,timelines,colorTweens,blueSurface,lightSurface,setProbe:fn=>{probe=fn;},ticks,lenis,splitters,flags,mm,flush,context,raf,get refreshes(){return refreshes;},get disconnected(){return observerDisconnected;}};
 }
 (async()=>{
   const cases=[];
   const check=(name,fn)=>{fn();cases.push(name);};
+  const footer=await boot();
+  const footEvent={button:0,preventDefault(){this.prevented=true;},stopPropagation(){this.stopped=true;}};
+  footer.footerLinks[3].emit('click',footEvent);
+  check('Footer navigation preserves smooth Lenis scroll and avoids immediate hash handler',()=>{
+    assert.equal(footer.lenis[0].lastScroll.target,footer.get('#experiencias'));
+    assert.equal(footer.lenis[0].lastScroll.opts.duration,1.05);
+    assert.equal(footer.lenis[0].lastScroll.opts.offset,undefined,'Lenis already applies scroll-padding');
+    assert.equal(footer.window.lastHash,'#experiencias');assert.ok(footEvent.prevented&&footEvent.stopped);
+  });
+  const modified={button:0,ctrlKey:true,preventDefault(){this.prevented=true;}};
+  footer.footerLinks[0].emit('click',modified);
+  check('Footer modified click retains normal link behavior',()=>assert.equal(modified.prevented,undefined));
+  const footerReduced=await boot({motion:false});
+  footerReduced.footerLinks[5].emit('click',{button:0,preventDefault(){},stopPropagation(){}});
+  check('Reduced motion footer anchor scrolls immediately without Lenis',()=>{
+    assert.equal(footerReduced.lenis.length,0);assert.equal(footerReduced.window.lastScroll.behavior,'auto');
+    assert.equal(footerReduced.window.lastHash,'#contact');
+  });
   let rail=await boot();rail.flush();
   check('Rail begins cream with official brand color over blue',()=>{assert.equal(rail.get('.rail-home').attrs['data-surface'],'blue');assert.equal(rail.get('.rail-home').style.backgroundColor,'#F8F3F0');assert.equal(rail.colorTweens.at(-1).vars.duration,0);});
   rail.get('.floating-nav').classList.add('is-visible');
