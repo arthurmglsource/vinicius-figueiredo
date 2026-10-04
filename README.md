@@ -48,4 +48,4 @@ O arquivo QA.md registra a verificação no Safari e seus limites.
 
 ## Footer
 
-Footer editorial em três colunas, empilhado no mobile, com navegação suave para as seções e redes sociais fornecidas no preview aprovado. O crédito MGL aguarda a URL oficial do proprietário; não foi usado um destino presumido. A auditoria local está registrada em QA.md.
+Footer editorial em três colunas, empilhado no mobile, com navegação suave para as seções e redes sociais fornecidas no preview aprovado. O crédito MGL aponta para https://www.mglgrowth.eu/, endereço oficial fornecido pelo proprietário, e abre em nova aba. A auditoria local está registrada em QA.md.
