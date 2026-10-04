@@ -103,3 +103,15 @@ Registro histórico de 2 de outubro de 2026, seguido das revisões de 3/10. A au
 - Movimento reduzido simulado: nome, imagem e legenda disponíveis em fluxo, zero triggers. Sem GSAP/ScrollTrigger/SplitText: arte completa e conteúdo disponíveis, sem loader preso. Preferência real do sistema e regras CSS revisadas, sem alterar configuração do Mac.
 - 24 verificações de lógica com doubles passaram, incluindo timeline única, duração, pin por transform, posição nativa, will-change somente ativo, reconstrução, imagem carregada, acesso, cleanup e fallback. Sintaxe JS, âncoras, assets HTTP, dimensões, sequência de 12 seções e diff sem erros.
 - Capturas e leituras locais em ../closing-qa/. Nenhum push ou deploy. Limites restantes: aparelhos físicos/toque, leitor de tela e métricas de produção não avaliados nesta auditoria. Destino do contato ainda deve ser configurado pelo proprietário.
+
+
+## Logo lateral e inversão de cores — 4 de outubro de 2026
+
+- Apenas a imagem do bloco `.rail-home` foi substituída pelo SVG VF já existente (`#vf-logo`), com fill via currentColor. Nenhuma alteração no símbolo original, header, CTA ou demais instâncias da marca.
+- Posição fixed, tamanho, aspecto quadrado, raio de 5px, centralização e menu preservados. HTML das 12 seções, botão MENU e dialog comparados em bytes com e764b25: idênticos.
+- Cores exatas: azul #014BAA / cream #F8F3F0. GSAP anima somente backgroundColor, color e borderColor do bloco em 0,45s com power2.out. O SVG acompanha a cor. Sobre fundos claros: bloco azul e logo cream; sobre azul/escuro: bloco cream e logo azul, com borda cream a 35% de opacidade.
+- Detecção da superfície efetivamente sob o centro da logo, sem lista manual de seções ou alteração dos fundos. Camadas da navegação são excluídas; backgrounds transparentes são ignorados. Duas sondas a ±2px mantêm a cor na fronteira e evitam alternâncias repetidas. Cores computadas em cache, eventos passivos e um requestAnimationFrame coalescido por atualização; sem loop contínuo. Tween e frame limpos ao sair.
+- Navegador integrado, prévia local: 1440, 1024, 768 e 390px CSS. Avanço e retorno entre Especialidades, Plano, Experiências, Números, Princípios, Fechamento e CTA; cores, SVG, dimensões e menu conferidos. Zero erros registrados e overflow. Geometria: desktop 64,8×64,8px; tablet 48×48px; mobile 46×46px — conforme as regras anteriores.
+- Fronteira de Princípios: offsets -3/-1/+1/+3px e retorno. Dentro da faixa de 4px, a paleta anterior permanece; fora dela, a transição ocorre nos dois sentidos. Rolagem contínua via Lenis no desktop e scroll nativo suave no mobile também conferidas.
+- Movimento reduzido simulado: cores e contraste preservados com duração zero. Sem bibliotecas: inversão preservada com fallback CSS. 31 verificações de lógica passaram (24 anteriores + 7 da inversão); sintaxe, HTML/âncoras/assets e diff passaram.
+- Capturas e leituras em ../rail-qa/. São testes em larguras CSS no computador, sem teste em dispositivos físicos. Nenhum push ou deploy.

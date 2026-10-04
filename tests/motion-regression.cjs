@@ -31,17 +31,21 @@ async function boot(options={}) {
   many('a[href="#contact"]',2);many('[data-lines]',1);many('.eyebrow',2);many('.closing-name-top,.closing-name-bottom,.closing-band,.closing-art,.closing-art-image,.closing-caption',6);many('.plan-row',4);many('.purpose-card',3);many('.principle-card',4);
   many('.pillar',3).forEach(row=>{row.querySelectorAll=s=>s==='.stack-layer'?Array.from({length:3},(_,i)=>row.querySelector(s+i)):[row.querySelector(s)];});
   stacks.forEach((button,i)=>{button.parent=new Element('art'+i);button.parent.querySelector('.stack-layer-2').alt='panel'+i;});
-  const timers=new Map(), raf=new Map(), timelines=[], ticks=new Set(), lenis=[], splitters=[];
+  const timers=new Map(), raf=new Map(), timelines=[], colorTweens=[], ticks=new Set(), lenis=[], splitters=[];
   let seq=0, refreshes=0, observerDisconnected=false, cleanup, mmCallback;
   const flags={motion:options.motion??true,desktop:options.desktop??true,tall:options.tall??true,touch:options.touch??false,closingRoom:options.closingRoom??true,closingMobile:options.closingMobile??false};
   const timeline=opts=>{const t={opts,now:0,from(){return t;},to(){return t;},fromTo(){return t;},revert(){t.reverted=true;},time(){return t.now;},progress(){opts?.onComplete?.();return t;}};timelines.push(t);return t;};
   const mm={add(queries,cb){this.queries=queries;mmCallback=cb;cleanup=cb({conditions:flags});},revert(){cleanup?.();cleanup=null;},switch(next){this.revert();Object.assign(flags,next);cleanup=mmCallback({conditions:flags});}};
-  const gsap={registerPlugin(){},matchMedia:()=>mm,timeline,set(){},from(){},fromTo(){},quickTo:()=>()=>{},ticker:{add:f=>ticks.add(f),remove:f=>ticks.delete(f)},utils:{clamp:(a,b,n)=>Math.max(a,Math.min(b,n))}};
+  const gsap={to(el,vars){const t={el,vars,kill(){this.killed=true;}};colorTweens.push(t);Object.assign(el.style,vars);return t;},registerPlugin(){},matchMedia:()=>mm,timeline,set(){},from(){},fromTo(){},quickTo:()=>()=>{},ticker:{add:f=>ticks.add(f),remove:f=>ticks.delete(f)},utils:{clamp:(a,b,n)=>Math.max(a,Math.min(b,n))}};
   class Lenis {constructor(){lenis.push(this);}on(){}raf(){}stop(){this.stopped=true;}start(){this.stopped=false;}destroy(){this.destroyed=true;}scrollTo(target,opts){this.lastScroll={target,opts};}}
   const context={window,document:doc,navigator:{hardwareConcurrency:options.lowPower?4:8},location:{hash:'',href:''},scrollY:0,innerWidth:1440,innerHeight:flags.tall?900:600,AbortController,Promise,
     setTimeout:fn=>{timers.set(++seq,fn);return seq;},clearTimeout:id=>timers.delete(id),requestAnimationFrame:fn=>{raf.set(++seq,fn);return seq;},cancelAnimationFrame:id=>raf.delete(id),
     matchMedia:q=>({matches:q.includes('hover: none')?flags.touch:q.includes('prefers-reduced-motion')?q.includes('no-preference')?flags.motion:!flags.motion:flags.desktop}),
     IntersectionObserver:class{observe(){}disconnect(){observerDisconnected=true;}},gsap,ScrollTrigger:{refresh(){refreshes++;},update(){}},SplitText:{create(){let split={revert(){split.reverted=true;}};splitters.push(split);return split;}},Lenis};
+  const blueSurface=new Element('blue section'),lightSurface=new Element('light section');
+  blueSurface.backgroundColor='rgb(1, 75, 170)';lightSurface.backgroundColor='rgb(248, 243, 240)';
+  let probe=()=>[blueSurface];doc.elementsFromPoint=(x,y)=>probe(x,y);
+  context.getComputedStyle=el=>({backgroundColor:el.backgroundColor||'rgba(0, 0, 0, 0)'});
   Object.assign(window,context);
   if(options.noGsap)delete window.gsap;
   if(options.noTrigger)delete window.ScrollTrigger;
@@ -49,11 +53,26 @@ async function boot(options={}) {
   vm.runInNewContext(source,context,{filename:'app.js'});
   await Promise.resolve();await Promise.resolve();await Promise.resolve();
   const flush=()=>{for(const fn of raf.values())fn();raf.clear();};
-  return {get,many,groups,doc,window,toggles,services,steps,stacks,timelines,ticks,lenis,splitters,flags,mm,flush,context,raf,get refreshes(){return refreshes;},get disconnected(){return observerDisconnected;}};
+  return {get,many,groups,doc,window,toggles,services,steps,stacks,timelines,colorTweens,blueSurface,lightSurface,setProbe:fn=>{probe=fn;},ticks,lenis,splitters,flags,mm,flush,context,raf,get refreshes(){return refreshes;},get disconnected(){return observerDisconnected;}};
 }
 (async()=>{
   const cases=[];
   const check=(name,fn)=>{fn();cases.push(name);};
+  let rail=await boot();rail.flush();
+  check('Rail begins cream with official brand color over blue',()=>{assert.equal(rail.get('.rail-home').attrs['data-surface'],'blue');assert.equal(rail.get('.rail-home').style.backgroundColor,'#F8F3F0');assert.equal(rail.colorTweens.at(-1).vars.duration,0);});
+  rail.get('.floating-nav').classList.add('is-visible');
+  rail.setProbe((x,y)=>[y<50?rail.blueSurface:rail.lightSurface]);rail.window.emit('scroll');rail.flush();
+  check('Rail holds its palette across a mixed 4px boundary',()=>assert.equal(rail.colorTweens.length,1));
+  rail.setProbe(()=>[rail.lightSurface]);rail.window.emit('scroll');rail.flush();
+  check('Rail inverts on light with isolated 450ms power2 transition',()=>{assert.equal(rail.get('.rail-home').style.backgroundColor,'#014BAA');assert.equal(rail.get('.rail-home').style.color,'#F8F3F0');assert.equal(rail.colorTweens.at(-1).vars.duration,.45);assert.equal(rail.colorTweens.at(-1).vars.ease,'power2.out');assert.equal(rail.colorTweens.at(-1).el,rail.get('.rail-home'));assert.equal(rail.get('.rail-menu').style.backgroundColor,undefined);});
+  rail.window.emit('scroll');rail.flush();
+  check('Rail does not restart an unchanged color transition',()=>assert.equal(rail.colorTweens.length,2));
+  rail.setProbe(()=>[rail.blueSurface]);rail.window.emit('scroll');rail.flush();
+  check('Rail reverses, supersedes old tween and cleans up on exit',()=>{assert.equal(rail.get('.rail-home').style.backgroundColor,'#F8F3F0');assert(rail.colorTweens[1].killed);rail.window.emit('pagehide',{persisted:false});assert(rail.colorTweens.at(-1).killed);assert.equal(rail.raf.size,0);});
+  let plainRail=await boot({noGsap:true});plainRail.setProbe(()=>[plainRail.lightSurface]);plainRail.flush();
+  check('Rail color inversion survives missing animation libraries',()=>{assert(plainRail.get('.rail-home').classes.has('is-color-fallback'));assert.equal(plainRail.get('.rail-home').style.backgroundColor,'#014BAA');});
+  let reducedRail=await boot({motion:false});reducedRail.flush();reducedRail.get('.floating-nav').classList.add('is-visible');reducedRail.setProbe(()=>[reducedRail.lightSurface]);reducedRail.window.emit('scroll');reducedRail.flush();
+  check('Rail respects reduced motion without removing color contrast',()=>{assert.equal(reducedRail.colorTweens.at(-1).vars.duration,0);assert.equal(reducedRail.get('.rail-home').style.color,'#F8F3F0');});
   let h=await boot();
   check('Desktop retains two sticky scenes and creates the editorial finale pin',()=>{assert(h.get('.approach-track').classes.has('is-opening'));assert(h.get('.method-track').classes.has('is-sequenced'));assert(h.get('.closing-track').classes.has('is-opening'));assert.equal(h.ticks.size,1);});
   const finale=h.timelines.find(t=>t.opts?.scrollTrigger?.id==='vf-editorial-finale');
@@ -75,7 +94,7 @@ async function boot(options={}) {
   check('Reduced motion clears active contexts and releases intro',()=>{assert.equal(h.ticks.size,0);assert(h.splitters.every(s=>s.reverted));assert(!h.doc.documentElement.classes.has('intro-pending'));assert(!h.get('.closing-track').classes.has('is-opening'));});
   h=await boot({noSplit:true});
   check('Optional SplitText failure preserves other animations',()=>{assert(h.get('.method-track').classes.has('is-sequenced'));assert.equal(h.splitters.length,0);});
-  check('Font/load refresh requests coalesce',()=>{h.flush();const before=h.refreshes;h.doc.fonts.emit('loadingdone');h.window.emit('load');assert.equal(h.raf.size,1);h.flush();assert.equal(h.refreshes,before+1);});
+  check('Font/load refresh requests coalesce',()=>{h.flush();const before=h.refreshes;h.doc.fonts.emit('loadingdone');h.window.emit('load');assert.equal(h.raf.size,2);h.flush();assert.equal(h.refreshes,before+1);});
   check('BFCache return refreshes retained contexts',()=>{h.window.emit('pagehide',{persisted:true});assert.equal(h.ticks.size,1);const before=h.refreshes;h.window.emit('pageshow',{persisted:true});assert.equal(h.refreshes,before+1);});
   check('Real page exit destroys ticker, observers, listeners',()=>{h.window.emit('pagehide',{persisted:false});assert.equal(h.ticks.size,0);assert(h.disconnected);assert(h.lenis.at(-1).destroyed);assert.equal(h.window.listeners.hashchange.length,0);assert.equal(h.raf.size,0);});
   for(const failure of ['noGsap','noTrigger']) {

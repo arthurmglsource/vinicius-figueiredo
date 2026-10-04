@@ -73,9 +73,59 @@
     });
   });
   const floating = [$('.floating-nav'), $('.chat-link')];
+  const railHome = $('.rail-home');
+  let railFrame, railTween, railSurface;
+  let surfaceColors = new WeakMap();
+  railHome.classList.toggle('is-color-fallback', !window.gsap);
+  // Sample the actual surface under the logo, excluding fixed navigation layers.
+  // Two probes create a 4px deadband so a section edge cannot flicker.
+  const surfaceAt = (x, y) => {
+    for (const node of document.elementsFromPoint(x, y)) {
+      if (!node.closest('main, footer')) continue;
+      let color = surfaceColors.get(node);
+      if (color === undefined) {
+        const rgba = getComputedStyle(node).backgroundColor.match(/[\d.]+/g)?.map(Number);
+        color = null;
+        if (rgba?.length >= 3 && (rgba[3] === undefined || rgba[3] > .5)) {
+          const distance = rgb => rgb.reduce((sum, value, i) => sum + (value - rgba[i]) ** 2, 0);
+          color = distance([248, 243, 240]) < distance([1, 75, 170]) ? 'light' : 'blue';
+        }
+        surfaceColors.set(node, color);
+      }
+      if (color) return color;
+    }
+    return 'blue';
+  };
+  const syncRailTheme = () => {
+    railFrame = null;
+    if (disposed) return;
+    const box = railHome.getBoundingClientRect();
+    const x = box.left + box.width / 2, y = box.top + box.height / 2;
+    const upper = surfaceAt(x, y - 2), lower = surfaceAt(x, y + 2);
+    if (upper !== lower && railSurface !== undefined) return;
+    const surface = upper === lower ? upper : surfaceAt(x, y);
+    if (surface === railSurface) return;
+    const instant = railSurface === undefined || !floating[0].classList.contains('is-visible') || reduced();
+    railSurface = surface;
+    railHome.setAttribute('data-surface', surface);
+    const colors = surface === 'light'
+      ? { backgroundColor: '#014BAA', color: '#F8F3F0', borderColor: '#014BAA' }
+      : { backgroundColor: '#F8F3F0', color: '#014BAA', borderColor: 'rgba(248,243,240,.35)' };
+    railTween?.kill();
+    if (window.gsap) railTween = gsap.to(railHome, { ...colors, duration: instant ? 0 : .45, ease: 'power2.out', overwrite: 'auto' });
+    else Object.assign(railHome.style, colors);
+  };
+  const queueRailTheme = () => { if (railFrame == null && !disposed) railFrame = requestAnimationFrame(syncRailTheme); };
+  const invalidateRailTheme = () => { surfaceColors = new WeakMap(); queueRailTheme(); };
+  listen(window, 'scroll', queueRailTheme, { passive: true });
+  listen(window, 'resize', invalidateRailTheme, { passive: true });
+  listen(window, 'load', invalidateRailTheme, { once: true });
+  listen(window, 'pageshow', invalidateRailTheme);
+  queueRailTheme();
   const observer = new IntersectionObserver(([entry]) => {
     const shown = !entry.isIntersecting;
     floating.forEach(el => { el.classList.toggle('is-visible', shown); el.inert = !shown; });
+    queueRailTheme();
   }, { threshold: .3 });
   observer.observe($('.hero'));
   // Base interactions and observers clean up even when animation libraries fail.
@@ -83,6 +133,8 @@
     if (e.persisted) return;
     disposed = true;
     cancelAnimationFrame(refreshFrame);
+    cancelAnimationFrame(railFrame);
+    railTween?.kill();
     observer.disconnect();
     menuMotion?.revert();
     disposeMotion();
