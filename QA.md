@@ -115,3 +115,14 @@ Registro histórico de 2 de outubro de 2026, seguido das revisões de 3/10. A au
 - Fronteira de Princípios: offsets -3/-1/+1/+3px e retorno. Dentro da faixa de 4px, a paleta anterior permanece; fora dela, a transição ocorre nos dois sentidos. Rolagem contínua via Lenis no desktop e scroll nativo suave no mobile também conferidas.
 - Movimento reduzido simulado: cores e contraste preservados com duração zero. Sem bibliotecas: inversão preservada com fallback CSS. 31 verificações de lógica passaram (24 anteriores + 7 da inversão); sintaxe, HTML/âncoras/assets e diff passaram.
 - Capturas e leituras em ../rail-qa/. São testes em larguras CSS no computador, sem teste em dispositivos físicos. Nenhum push ou deploy.
+
+
+## Experiências — retorno ao grid aprovado, 4 de outubro de 2026
+
+- Print antigo de Clientes aplicado como autoridade visual. Regras recuperadas de 1318332: heading em 10,55vw, padding 4,7vw / 7,35vw / 2,5vw, headline 3,72vw, grid 3×2 com gap 1vw / 0,85vw, cards 466:191, raio 7px, fundo #efebe8 sobre #F8F3F0. Os breakpoints antigos de 1024/768/500px foram restaurados; mobile usa duas colunas.
+- Removidos lista vertical, datas laterais, grandes cargos e legenda de intervalo. Título e headline exatamente conforme o novo pedido. Seis marcas oficiais existentes, na ordem WIWAP, EY, Minas Telecom, Tigre, ClubPetro e Bolt Júnior; arquivos de logos intactos e sem filtros, distorção ou placeholders.
+- Nome pequeno no canto inferior. Cargo e período em microlegenda no hover/foco, sem mudar dimensões ou a composição em repouso. Conteúdo associado por aria-describedby; foco por teclado e toque disponível. Logo central com contain; EY e Tigre mantêm as bases de contraste necessárias aos lockups oficiais brancos.
+- Recuperada a animação original dos cards (máscara vertical de 0,75s, stagger 0,065s por coluna, imagem y14/scale0,97), com o lifecycle GSAP atual. Hover original com fundo #e8e3df, translateY(-3px)/scale(1,025). Movimento reduzido e ausência de bibliotecas mantêm o conteúdo disponível.
+- Auditoria no navegador integrado em 1440, 1024, 768 e 390px CSS: seis logos carregados, grid correto, nenhuma imagem cortada, zero overflow/erros. Desktop: cards 401,3×164,5px, proporção 466:191; mobile 390: cards 166×103,75px, proporção 1,6. Microlegenda Minas conferida no hover/foco desktop e foco mobile, inteiramente dentro do card e sem sobrepor o nome.
+- Sintaxe, validação de HTML/âncoras/assets, diff e 31 regressões existentes passaram. HTML das outras 11 seções preservado byte a byte; regras/animações externas à seção preservadas, incluindo o espaçamento já existente de Sistemas no mobile.
+- Capturas e leituras em ../experience-grid-qa/. Teste de larguras no computador, sem dispositivos físicos. Sem push ou publicação.
