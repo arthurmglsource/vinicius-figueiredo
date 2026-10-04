@@ -44,4 +44,4 @@ https://vooban.com/a-propos
 
 ## Resultado da retomada
 
-Implementação e auditoria local registradas em `QA.md`. Lista de empresas reais/logos ainda não fornecida; marcas fictícias removidas. Sem publicação.
+Implementação e auditoria local registradas em `QA.md`. Marcas fictícias removidas. Pedido de 4/10 forneceu seis experiências reais, integradas como trajetória profissional na nova seção Experiências; fontes em EXPERIENCE-ASSETS.md. Sem publicação.

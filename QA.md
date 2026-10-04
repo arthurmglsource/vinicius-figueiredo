@@ -80,3 +80,11 @@ Registro histórico de 2 de outubro de 2026, seguido das revisões de 3/10. A au
 - `node tests/motion-regression.cjs`, sintaxe JavaScript, validação estática e `git diff --check` passaram. Testes de lógica usam doubles; a conferência de renderização foi feita separadamente no Safari.
 - Permanecem os limites descritos acima: dispositivos físicos/toque, leitor de tela, comparação pixel a pixel e Core Web Vitals não foram medidos. Não há afirmação de equivalência pixel a pixel com a Vooban.
 - Únicas dependências de conteúdo: empresas reais/logos oficiais para o item 6 e canal de contato para ativar o CTA. Não foram criadas empresas nem destinos fictícios.
+
+
+## Experiências — 4 de outubro de 2026
+
+- Seção editorial entre Plano e Sistemas, com headline e seis vínculos profissionais informados pelo usuário. Item 6 concluído com nomes, cargos, períodos e marcas reais; empresas apresentadas como trajetória profissional.
+- Fontes oficiais e tratamentos de arquivo registrados em EXPERIENCE-ASSETS.md. Sem criação de marcas ou clientes.
+- Safari 1440 × 900 e 390 × 844: headline, datas, cargos, seis logos e progressão no Grupo Minas Telecom inspecionados. Zero overflow, erros registrados ou imagens quebradas. Separadores/textos acompanham scroll no desktop; fluxo vertical no celular.
+- 19 verificações existentes de lógica, sintaxe JS e validação estática com 12 seções passaram. Nenhuma alteração na hero. Sem publicação.

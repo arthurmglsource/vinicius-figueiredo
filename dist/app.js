@@ -255,6 +255,16 @@
         } else gsap.from(row, { y: 18, opacity: .4, duration: .7,
           ease: 'power3.out', scrollTrigger: enter(row), clearProps: clean });
       });
+      all('.experience-row').forEach(row => {
+        if (desktop) {
+          gsap.fromTo(row, { '--experience-rule': 0 }, { '--experience-rule': 1,
+            ease: 'none', scrollTrigger: { trigger: row, start: 'top 92%', end: 'top 48%', scrub: .6 } });
+          gsap.fromTo(row.querySelector('.experience-detail'), { y: 28, opacity: .45 },
+            { y: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: row,
+              start: 'top 92%', end: 'top 48%', scrub: .6 } });
+        } else gsap.from(row.querySelector('.experience-detail'), { y: 18, opacity: .45,
+          duration: .7, ease: 'power3.out', scrollTrigger: enter(row), clearProps: clean });
+      });
       all('.purpose-card').forEach((card, i) => {
         if (desktop) gsap.fromTo(card, { y: 90, rotation: [-5, 4, -3][i] },
           { y: -25, rotation: [-2, 2, -1][i], ease: 'none', scrollTrigger: { trigger: card,
