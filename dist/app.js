@@ -103,6 +103,8 @@
   };
   if (document.fonts) listen(document.fonts, 'loadingdone', refreshGeometry);
   listen(window, 'load', refreshGeometry, { once: true });
+  const closingImage = $('.closing-art-image');
+  if (!closingImage.complete) listen(closingImage, 'load', refreshGeometry, { once: true });
   const lowPower = navigator.connection?.saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
   const enter = (trigger, start = 'top 91%') => ({ trigger, start, toggleActions: 'play none none none' });
   const clean = 'transform,opacity,filter,clipPath,willChange';
@@ -110,7 +112,7 @@
   // Bounded font wait: a slow connection must never hold the page behind a loader.
   Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(resolve => setTimeout(resolve, 250))]).then(() => {
     if (disposed) return;
-    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)', tall: '(min-height: 650px)' }, context => {
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)', tall: '(min-height: 650px)', closingRoom: '(min-height: 480px)', closingMobile: '(max-width: 768px)' }, context => {
       if (!context.conditions.motion) { menuMotion?.revert(); menuMotion = null; releaseIntro(); return; }
       const desktop = context.conditions.desktop && !lowPower;
       const sequenced = desktop && context.conditions.tall;
@@ -280,22 +282,36 @@
       });
 
       const closingTrack = $('.closing-track');
-      if (sequenced) {
+      const closingStage = $('.closing-stage');
+      if (context.conditions.closingRoom && !lowPower) {
+        const mobileFinale = context.conditions.closingMobile;
         closingTrack.classList.add('is-opening');
-        restores.push(() => closingTrack.classList.remove('is-opening'));
-        gsap.set('.closing-flow span', { y: 18, opacity: 0 });
-        const finale = gsap.timeline({ scrollTrigger: { trigger: closingTrack,
-          start: 'top top', end: 'bottom bottom', scrub: .65, invalidateOnRefresh: true } });
-        finale.to('.closing-left', { xPercent: -110, duration: 1.4, ease: 'power2.inOut' }, .05)
-          .to('.closing-right', { xPercent: 110, duration: 1.4, ease: 'power2.inOut' }, .05)
-          .fromTo('.closing-frame', { scale: .6, opacity: 0, clipPath: 'inset(18% 40% 18% 40% round 18px)' },
-            { scale: 1, opacity: 1, clipPath: 'inset(0% 0% 0% 0% round 18px)', duration: 1.2, ease: 'power2.inOut' }, .32)
-          .to('.closing-flow span', { y: 0, opacity: 1, stagger: .08, duration: .45 }, 1.1)
-          .fromTo('.closing-chart-line', { strokeDasharray: 1, strokeDashoffset: 1 },
-            { strokeDashoffset: 0, autoRound: false, duration: .7, ease: 'none' }, 1.2)
-          .to('.closing-frame', { y: -20, duration: .35, ease: 'none' }, 1.9);
-      } else gsap.from('.closing-frame', { y: 25, clipPath: 'inset(0 0 100% 0 round 16px)',
-        duration: .9, ease: 'power3.inOut', scrollTrigger: enter('.closing-frame'), clearProps: clean });
+        const movingParts = all('.closing-name-top,.closing-name-bottom,.closing-band,.closing-art,.closing-art-image,.closing-caption');
+        const hintCompositing = active => movingParts.forEach(el => { el.style.willChange = active ? 'transform' : ''; });
+        restores.push(() => { closingTrack.classList.remove('is-opening'); hintCompositing(false); });
+        // One reversible timeline owns name, reveal, parallax and the final hold.
+        // The spacer reserves the entire scroll distance; image dimensions reserve its geometry.
+        const finale = gsap.timeline({ scrollTrigger: { id: 'vf-editorial-finale', trigger: closingTrack,
+          // Read the native document position after a breakpoint scroll clamp.
+          start: () => closingTrack.getBoundingClientRect().top + window.scrollY,
+          end: () => '+=' + Math.round(innerHeight * (mobileFinale ? 1.4 : 2)),
+          pin: closingStage, pinType: 'transform', pinSpacing: true, anticipatePin: 1, scrub: .65, invalidateOnRefresh: true,
+          onToggle: self => hintCompositing(self.isActive) } });
+        finale.to('.closing-name-top', { y: mobileFinale ? -460 : -410, duration: 1.28, ease: 'power2.inOut' }, .08)
+          .to('.closing-name-bottom', { y: mobileFinale ? 460 : 410, duration: 1.28, ease: 'power2.inOut' }, .08)
+          .to('.closing-band--1', { x: mobileFinale ? -14 : -56, duration: 1.12, ease: 'power2.inOut' }, .16)
+          .to('.closing-band--3', { x: mobileFinale ? 14 : 56, duration: 1.12, ease: 'power2.inOut' }, .16)
+          .fromTo('.closing-art', { scale: .44, opacity: 0, y: 12,
+            clipPath: 'inset(25% 30% 25% 30% round 18px)' },
+            { scale: 1, opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0% round 18px)',
+              duration: 1.32, ease: 'power2.inOut' }, .38)
+          .fromTo('.closing-art-image', { scale: 1.06 }, { scale: 1, duration: 1.32, ease: 'power2.out' }, .38)
+          .to('.closing-art', { y: mobileFinale ? -4 : -8, duration: .3, ease: 'sine.inOut' }, 1.7)
+          .fromTo('.closing-caption', { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: .3, ease: 'power2.out' }, 1.86)
+          .to({}, { duration: .24 }, 2.16);
+      } else gsap.from('.closing-art', { y: 12, opacity: .5, duration: .75,
+        ease: 'power2.out', scrollTrigger: enter('.closing-art'), clearProps: clean });
 
       if (desktop) {
         // Move SVG contents independently: the two name layers stay registered.

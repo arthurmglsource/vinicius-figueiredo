@@ -279,31 +279,23 @@ html.lenis.lenis-smooth{scroll-behavior:auto!important}
 @media(max-width:1024px){.principles{gap:6%;padding-top:80px;padding-bottom:80px}.principle-card{padding:30px 26px;min-height:400px}.principles-count{font-size:150px}.principle-card h3{font-size:34px}}
 @media(max-width:768px){.principles{grid-template-columns:1fr;gap:35px;padding-top:75px;padding-bottom:75px}.principles-count{font-size:95px;margin-top:24px}.principle-card{min-height:0;padding:29px 25px}.principle-card h3{margin:32px 0 25px}.principles-list{gap:16px}.principles-heading{position:static}}
 
-/* Reference 19 → 20: the signature opens around an original growth composition. */
-.closing{position:relative;background:var(--blue);color:var(--cream);overflow:clip;padding:40px 0 65px}
-.closing-stage{position:relative;display:grid;place-items:center;min-height:900px;padding:70px 7%;gap:50px}
-.closing-heading{width:100%;position:relative;z-index:2;pointer-events:none}
-.closing-heading svg{width:100%;height:auto;overflow:visible}
+/* Editorial finale: the attached composition stays intact at its original ratio. */
+.closing{position:relative;background:var(--blue);color:var(--cream);overflow:clip;padding:0}
+.closing-stage{position:relative;display:grid;justify-items:center;align-content:center;gap:45px;min-height:100svh;padding:65px 0}
+.closing-heading{width:104%;position:relative;z-index:3;pointer-events:none}
+.closing-heading svg{display:block;width:100%;height:auto;overflow:visible}
 .closing-heading text{fill:var(--cream);font:900 258px/1 Inter,Arial,sans-serif;letter-spacing:-8px}
-.closing-frame{background:var(--cream);color:var(--ink);border-radius:18px;padding:35px 4%;width:min(100%,1000px);position:relative;overflow:hidden;box-shadow:0 25px 70px #00214f30}
-.closing-frame-top{display:flex;justify-content:space-between;gap:15px;font:11px/1.4 monospace;color:var(--blue);letter-spacing:.04em}
-.closing-statement{font-size:clamp(34px,4vw,70px);line-height:1.04;letter-spacing:-.055em;margin:45px 0;font-weight:400}
-.closing-flow{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.closing-flow span{padding:15px 20px;border:1px solid #014baa30;border-radius:8px;font:13px/1.2 monospace;color:var(--blue);background:#fff}
-.closing-flow i{font-style:normal;color:var(--blue)}
-.closing-chart{width:100%;height:auto;margin-top:25px}
-.closing-caption{font:11px/1.5 monospace;color:var(--blue);margin-top:20px;letter-spacing:.08em}
-.closing-track.is-opening{height:260svh}
-.closing-track.is-opening .closing-stage{position:sticky;top:0;height:100svh;min-height:0;display:grid;padding:30px 7%;gap:0}
-.closing-track.is-opening .closing-heading{position:absolute;left:2%;right:2%;top:50%;translate:0 -50%;width:96%}
-.closing-track.is-opening .closing-frame{width:min(72vw,1100px);height:min(78svh,710px);display:flex;flex-direction:column;justify-content:space-between;padding:32px 4%}
-.closing-track.is-opening .closing-chart{max-height:24svh}
-.closing-track.is-opening .closing-statement{margin:clamp(18px,3svh,30px) 0;font-size:clamp(34px,min(4vw,6.5svh),70px)}
-.closing-track.is-opening .closing-flow span{padding:clamp(10px,1.5svh,15px) 20px}
-.closing-track.is-opening .closing-caption{margin-top:clamp(10px,2svh,20px)}
+.closing-art-anchor{width:90vw;position:relative}
+.closing-art{position:relative;z-index:2;width:100%;aspect-ratio:1981/793;margin:0;overflow:hidden;border-radius:clamp(10px,1.5vw,28px);isolation:isolate}
+.closing-art-image{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto}
+.closing-caption{position:relative;z-index:4;text-align:center;font:400 clamp(17px,1.4vw,24px)/1.35 Inter,Arial,sans-serif;letter-spacing:-.025em}
+.closing-track.is-opening .closing-stage{height:100svh;min-height:0;display:block;padding:0;overflow:clip}
+.closing-track.is-opening .closing-heading{position:absolute;left:-2%;top:50%;translate:0 -50%;width:104%}
+.closing-track.is-opening .closing-art-anchor{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90%,190svh)}
+.closing-track.is-opening .closing-caption{position:absolute;left:10%;right:10%;bottom:5svh}
 .closing+.contact{padding-top:65px}
-@media(max-width:1024px){.closing-stage{min-height:0;padding:70px 8%}.closing-frame{padding:30px}.closing-flow{gap:8px}.closing-flow span{padding:12px;font-size:11px}}
-@media(max-width:768px){.closing{padding:30px 0 40px}.closing-stage{gap:40px;padding:45px 24px}.closing-frame{padding:25px 22px}.closing-frame-top{font-size:9px;flex-wrap:wrap}.closing-statement{font-size:37px;margin:35px 0}.closing-flow{display:grid;grid-template-columns:1fr 12px 1fr;gap:10px}.closing-flow i:nth-of-type(2){display:none}.closing-flow span{font-size:10px;padding:13px 9px;text-align:center}.closing-flow i:last-of-type{grid-column:2;grid-row:2}.closing-flow span:last-of-type{grid-column:3;grid-row:2}.closing-chart{margin-top:30px}.closing-caption{font-size:9px}.closing+.contact{padding-top:45px}}
-
+@media(max-width:1024px){.closing-stage{gap:35px;padding:50px 0}.closing-track.is-opening .closing-art-anchor{width:min(92%,190svh)}}
+@media(max-width:768px){.closing-stage{min-height:0;padding:80px 0 55px;gap:36px}.closing-heading{width:108%}.closing-art-anchor{width:94vw}.closing-art{border-radius:10px}.closing-caption{font-size:18px}.closing-track.is-opening .closing-heading{left:-4%;width:108%}.closing-track.is-opening .closing-art-anchor{width:94%}.closing-track.is-opening .closing-caption{bottom:14svh;font-size:18px}.closing+.contact{padding-top:45px}}
+@media(max-height:700px){.closing-track.is-opening .closing-art-anchor{top:46%}}
 /* GSAP owns rotation only while desktop parallax is active. */
 .has-parallax .stack-layer,.has-parallax .purpose-card{rotate:0deg}

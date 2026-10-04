@@ -31,11 +31,11 @@ O arquivo da foto da hero permanece idêntico à versão aprovada. A hero usa lo
 
 O desktop com ponteiro preciso usa Lenis integrado ao ciclo de atualização do GSAP. Mobile, tablet, movimento reduzido e dispositivos com economia de dados ou até quatro núcleos usam rolagem nativa. O método tem progressão em quatro etapas com posicionamento sticky em telas amplas; nos demais casos, todas as etapas ficam disponíveis em sequência vertical. `prefers-reduced-motion` desativa as animações. As animações e os eventos são desfeitos nas mudanças de contexto e na saída da página.
 
-Os painéis de mídia, CRM e automação são SVGs originais, nítidos e sem métricas comerciais inventadas. Cada pilha contém três camadas reais, parallax sincronizado com o scroll e um controle de abertura acessível. Missão, Visão e Valores usam cartões editoriais sobre um fundo vetorial de conexões. Princípios usam composição editorial com cartões verticais contornados. O fechamento abre o nome completo e revela um painel de crescimento.
+Os painéis de mídia, CRM e automação são SVGs originais, nítidos e sem métricas comerciais inventadas. Cada pilha contém três camadas reais, parallax sincronizado com o scroll e um controle de abertura acessível. Missão, Visão e Valores usam cartões editoriais sobre um fundo vetorial de conexões. Princípios usam composição editorial com cartões verticais contornados. O fechamento abre verticalmente o nome completo em faixas e revela a arte editorial original Vinicius + MacBook + VF. Detalhes do asset e da sequência em CLOSING-ASSET.md.
 
 ## Empresas reais pendentes
 
-As oito marcas fictícias e seus arquivos foram removidos. A seção Clientes aguarda a lista de empresas reais e logos oficiais fornecidas ou confirmadas pelo usuário; não há clientes inventados publicados.
+As oito marcas fictícias e seus arquivos foram removidos. A seção Experiências apresenta a trajetória profissional real informada pelo usuário: WIWAP, EY, Grupo Minas Telecom, Grupo Tigre, ClubPetro e Bolt Júnior/UNIFEI. As marcas oficiais e suas fontes estão registradas em EXPERIENCE-ASSETS.md; essas empresas não são apresentadas como clientes.
 
 O monograma foi vetorizado a partir dos contornos visíveis. A fonte Inter foi escolhida por proximidade visual; o arquivo da fonte original do layout não foi fornecido.
 
