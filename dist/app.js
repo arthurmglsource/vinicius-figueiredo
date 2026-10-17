@@ -55,13 +55,15 @@
   });
   const contactConfig = window.VINICIUS_CONFIG || {};
   const resolveWhatsApp = () => {
+    if (contactConfig.whatsappUrl) return contactConfig.whatsappUrl;
+    if (window.WHATSAPP_URL) return window.WHATSAPP_URL;
     const phone = String(contactConfig.whatsappNumber || '').replace(/[+\s()-]/g, '');
     if (!/^[1-9]\d{9,14}$/.test(phone)) return '';
     const url = new URL('https://wa.me/' + phone);
     url.searchParams.set('text', contactConfig.whatsappMessage || '');
     return url.href;
   };
-  const whatsappUrl = resolveWhatsApp();
+  const whatsappUrl = contactConfig.whatsappUrl || window.WHATSAPP_URL || resolveWhatsApp();
   all('[data-contact]').forEach(link => {
     if (whatsappUrl) {
       link.setAttribute('href', whatsappUrl);

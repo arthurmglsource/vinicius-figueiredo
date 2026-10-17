@@ -53,7 +53,7 @@ async function boot(options={}) {
   window.history={pushState:(state,title,hash)=>{context.location.hash=hash;window.lastHash=hash;}};
   window.scrollTo=opts=>{window.lastScroll=opts;};
   Object.assign(window,context);
-  window.VINICIUS_CONFIG={whatsappNumber:options.whatsappNumber||'',whatsappMessage:'Olá, Vinicius. Vi seu site e gostaria de conversar sobre a estrutura comercial da minha empresa.'};
+  window.VINICIUS_CONFIG={whatsappUrl:options.whatsappUrl,whatsappNumber:options.whatsappNumber||'',whatsappMessage:'Olá, Vinicius. Vi seu site e gostaria de conversar sobre a estrutura comercial da minha empresa.'};
   if(options.noGsap)delete window.gsap;
   if(options.noTrigger)delete window.ScrollTrigger;
   if(options.noSplit)delete window.SplitText;
@@ -72,6 +72,16 @@ async function boot(options={}) {
     const links=whatsapp.groups.get('[data-contact]');assert.equal(links.length,13);
     for(const link of links){const u=new URL(link.getAttribute('href'));assert.equal(u.hostname,'wa.me');assert.equal(u.pathname,'/15555550100');assert.equal(u.searchParams.get('text'),contactMessage);assert.equal(link.attrs.target,'_blank');assert.equal(link.attrs.rel,'noopener noreferrer');}
     assert(whatsapp.footerLinks.every(l=>l.getAttribute('href').startsWith('#')));
+  });
+  const officialUrl = 'https://wa.me/5531993806300?text=Ol%C3%A1,%20Vin%C3%ADcius!%20Vim%20pelo%20seu%20site%20e%20gostaria%20de%20entender%20como%20podemos%20organizar%20melhor%20nossa%20opera%C3%A7%C3%A3o.';
+  const officialWhatsapp = await boot({whatsappUrl: officialUrl});
+  check('All thirteen conversion CTAs consume the exact official WhatsApp URL with target _blank and noopener noreferrer',()=>{
+    const links=officialWhatsapp.groups.get('[data-contact]');assert.equal(links.length,13);
+    for(const link of links){
+      assert.equal(link.getAttribute('href'), officialUrl);
+      assert.equal(link.attrs.target,'_blank');
+      assert.equal(link.attrs.rel,'noopener noreferrer');
+    }
   });
   const missingContact=await boot();
   check('Missing recipient is never invented and no temporary contact message is rendered',()=>{
