@@ -1,24 +1,18 @@
-# Fechamento horizontal — mapeamento e asset
+# Composição final em camadas — 17/10/2026
 
-Revisão de 4 de outubro de 2026. Referência: https://vooban.com/a-propos. As instruções atuais substituem a abertura vertical anterior. Nenhuma imagem, texto ou marca da Vooban é incorporada ao site.
+A seção final é construída com gradiente e mesa em CSS, foto recortada em SVG, textos e CTA em HTML. As screenshots recebidas servem apenas de referência e não são renderizadas.
 
-## Anexos, na ordem enviada
+## PNGs originais
 
-| Print | Seção / papel | Comportamento | Correção |
-|---|---|---|---|
-| 1 | Fechamento atual, inicial | Nome já legível em duas linhas | Iniciar glifos sobrepostos em uma baseline central |
-| 2 | Fechamento atual, intermediário | Letras se afastam verticalmente, arte pequena | Substituir por dispersão horizontal e reveal central |
-| 3 | Fechamento atual, avançado | Arte anterior com moldura cream | Usar a nova arte sem moldura acrescentada |
-| 4 | Fechamento atual, outro viewport | Faixas e duas linhas afastadas em Y | Remover faixas/duplicação, controlar cada letra em X |
-| 5 | Vooban, tipografia | Faixas de apresentação da referência | Referência de escala; não replicar a separação vertical rejeitada no pedido |
-| 6 | Vooban, reveal intermediário | Imagem nasce central, letras abrem lateralmente | Reveal e dispersão na mesma timeline de scroll |
-| 7 | Vooban, estágio avançado | Arte quase cobre viewport e letras nas bordas | Expandir quadro em largura e altura, dispersar letras para fora |
-| 8 | Nova arte horizontal | Vinicius, MacBook/Apple, VF, colagem azul | Asset principal, sem edição |
+- `dist/assets/vinicius-working-original.png`: cópia byte a byte de `08_trabalhando_no_laptop.png`, 1122×1402. SHA-256 `e1c327c91595c064fdcb055b45b397eaa7eda8ab5a77f24508a8c7eb098451c7`.
+- `dist/assets/macbook-source-original.png`: cópia byte a byte de `05_macbook_prata_recorte.png`, 1122×1402. SHA-256 `ee0735e3516d109d4c30cb7f867e331497cce5759c2dedad6e35eb7eb424b6a2`.
 
-## Asset
+O rosto, pose, corpo, mão e teclado vêm do asset 08 enviado. Apenas a tampa completa e a Apple vêm do asset 05 do mesmo pacote original. Os contornos SVG isolam essas partes e retiram os resíduos do outro braço, notebook antigo e mesa rasterizada. Nenhum PNG foi editado, comprimido, gerado ou substituído por um print.
 
-`dist/assets/vinicius-editorial-horizontal.png`: PNG original copiado byte a byte do oitavo anexo. 1672 × 941; SHA-256 `2c897d22b0ee2f38a6522d49962b2c28b8958ac2141c4623dc5483d554a47960`. Sem retoque, filtro, distorção do rosto ou alteração da Apple. Object-fit cover apenas no enquadramento responsivo.
+A foto alternativa proibida não é utilizada. As versões `vinicius-final-approved.png` e `closing-approved-reference.png` são histórico, sem referência no HTML atual.
 
-## Sequência
+## Animação e acabamento
 
-Uma timeline em gsap.context, scrub verdadeiro e pin com espaço reservado. Glifos em uma única baseline: sobreposição central → abertura horizontal parcialmente sobreposta → nome aberto → dispersão para as bordas. Arte nasce pequena no centro e cresce em largura e altura até 100vw × 100svh no desktop. No mobile, amplitude reduzida e altura final de 68svh para manter rosto e Apple no enquadramento. Reduced motion e bibliotecas indisponíveis: nome legível e arte em fluxo estático.
+A cortina VF, o fundo claro inicial, a marca centralizada, a timeline, o pin/scrub e a sequência de entrada permanecem iguais. A composição em camadas é revelada pela abertura existente.
+
+O acabamento mais recente altera somente os dois contornos de extração. CSS, JS, transformações e rodapé permanecem byte a byte iguais ao estado anterior à correção. Ver `MACBOOK-FINISH-QA.md` para evidências atuais. `FINAL-ASSET-QA.md` registra a etapa histórica de imagem única e foi substituído por esta implementação em camadas.

@@ -5,6 +5,8 @@
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const events = new AbortController();
   let disposed = false, introPlayed = false, refreshFrame, disposeMotion = () => {};
+  let motionReady = false;
+  let initialContactPending = location.hash === '#contact';
   const listen = (el, type, fn, options = {}) => el.addEventListener(type, fn, { ...options, signal: events.signal });
   const releaseIntro = () => {
     clearTimeout(window.vfIntroGuard);
@@ -13,6 +15,10 @@
   const menu = $('#menu-dialog');
   const toggles = all('[aria-controls="menu-dialog"]');
   let menuOpener, menuMotion, smoothScroll;
+  const anchorDestination = target => {
+    const finale = window.ScrollTrigger?.getById('vf-brand-finale');
+    return target.id === 'contact' && finale ? finale.end : target;
+  };
   const closeMenu = () => { if (menu.open) menu.close(); };
   toggles.forEach(button => listen(button, 'click', () => {
     if (menu.open) return;
@@ -35,7 +41,11 @@
   });
   listen(window, 'hashchange', () => {
     const target = document.getElementById(location.hash.slice(1));
-    if (target && smoothScroll) smoothScroll.scrollTo(target, { immediate: true, force: true });
+    if (!target) return;
+    if (target.id === 'contact' && !motionReady) initialContactPending = true;
+    const destination = anchorDestination(target);
+    if (smoothScroll) smoothScroll.scrollTo(destination, { immediate: true, force: true });
+    else if (typeof destination === 'number') window.scrollTo({ top: destination, behavior: 'auto' });
   });
   listen(menu, 'close', () => {
     smoothScroll?.start();
@@ -43,16 +53,27 @@
     toggles.forEach(b => b.setAttribute('aria-expanded', 'false'));
     menuOpener?.focus({ preventScroll: true });
   });
-  const contactUrl = window.VINICIUS_CONFIG?.contactUrl || '';
-  const contactButton = $('.contact-action');
-  if (/^(https:\/\/|mailto:|tel:)/i.test(contactUrl)) {
-    all('a[href="#contact"]').forEach(a => { a.href = contactUrl; });
-    contactButton.removeAttribute('aria-disabled');
-    contactButton.removeAttribute('title');
-    listen(contactButton, 'click', () => { window.location.href = contactUrl; });
-  } else {
-    listen(contactButton, 'click', () => { $('#contact-status').textContent = 'O canal de contato será disponibilizado em breve.'; });
-  }
+  const contactConfig = window.VINICIUS_CONFIG || {};
+  const resolveWhatsApp = () => {
+    const phone = String(contactConfig.whatsappNumber || '').replace(/[+\s()-]/g, '');
+    if (!/^[1-9]\d{9,14}$/.test(phone)) return '';
+    const url = new URL('https://wa.me/' + phone);
+    url.searchParams.set('text', contactConfig.whatsappMessage || '');
+    return url.href;
+  };
+  const whatsappUrl = resolveWhatsApp();
+  all('[data-contact]').forEach(link => {
+    if (whatsappUrl) {
+      link.setAttribute('href', whatsappUrl);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+      link.setAttribute('aria-label', 'Conversar com Vinicius no WhatsApp');
+      link.removeAttribute('aria-disabled');
+    } else {
+      // No recipient is fabricated. Production readiness is documented outside the UI.
+      link.setAttribute('aria-disabled', 'true');
+    }
+  });
   // Footer anchors keep smooth navigation independent of the menu's immediate hash handling.
   all('.footer-nav a').forEach(link => {
     const hash = '#' + link.getAttribute('data-section');
@@ -65,16 +86,27 @@
       e.stopPropagation();
       const offset = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
       if (location.hash !== hash) window.history.pushState(null, '', hash);
-      if (smoothScroll && !reduced()) smoothScroll.scrollTo(target, { duration: 1.05, force: true });
-      else window.scrollTo({ top: window.scrollY + target.getBoundingClientRect().top - offset,
+      const destination = anchorDestination(target);
+      if (smoothScroll && !reduced()) smoothScroll.scrollTo(destination, { duration: 1.05, force: true });
+      else window.scrollTo({ top: typeof destination === 'number' ? destination : window.scrollY + target.getBoundingClientRect().top - offset,
         behavior: reduced() ? 'auto' : 'smooth' });
     });
   });
-  // Touch mirrors the reference hover: first tap draws, second follows the link.
+  // The contact block lives at the end of the pinned story, not at its DOM offset.
+  all('a[href="#contact"]:not(.footer-nav a)').forEach(link => listen(link, 'click', e => {
+    if (e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const target = $('#contact'), destination = anchorDestination(target);
+    if (typeof destination !== 'number') return;
+    e.preventDefault();
+    e.stopPropagation();
+    window.history.pushState(null, '', '#contact');
+    if (smoothScroll) smoothScroll.scrollTo(destination, { duration: 1.05, force: true });
+    else window.scrollTo({ top: destination, behavior: reduced() ? 'auto' : 'smooth' });
+  }));
+  // Touch feedback reuses the existing cyan stroke without consuming a conversion tap.
   all('.service').forEach(card => {
-    listen(card, 'click', e => {
-      if (!matchMedia('(hover: none), (pointer: coarse)').matches || card.classList.contains('is-active')) return;
-      e.preventDefault();
+    listen(card, 'pointerdown', () => {
+      if (!matchMedia('(hover: none), (pointer: coarse)').matches) return;
       all('.service.is-active').forEach(other => other.classList.remove('is-active'));
       card.classList.add('is-active');
     });
@@ -168,23 +200,37 @@
   disposeMotion = () => mm.revert();
   const refreshGeometry = () => {
     cancelAnimationFrame(refreshFrame);
-    refreshFrame = requestAnimationFrame(() => { if (!disposed) ScrollTrigger.refresh(); });
+    refreshFrame = requestAnimationFrame(() => {
+      if (disposed) return;
+      ScrollTrigger.refresh();
+      smoothScroll?.resize();
+      if (initialContactPending && motionReady) {
+        initialContactPending = false;
+        const destination = anchorDestination($('#contact'));
+        if (smoothScroll) smoothScroll.scrollTo(destination, { immediate: true, force: true });
+        else window.scrollTo({ top: typeof destination === 'number' ? destination : destination.getBoundingClientRect().top + window.scrollY - (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0), behavior: 'auto' });
+      }
+    });
   };
   if (document.fonts) listen(document.fonts, 'loadingdone', refreshGeometry);
   listen(window, 'load', refreshGeometry, { once: true });
   const closingImage = $('.closing-art-image');
   if (!closingImage.complete) listen(closingImage, 'load', refreshGeometry, { once: true });
-  const lowPower = navigator.connection?.saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+  const lowPower = navigator.connection?.saveData === true;
   const enter = (trigger, start = 'top 91%') => ({ trigger, start, toggleActions: 'play none none none' });
   const clean = 'transform,opacity,filter,clipPath,willChange';
+  // Read absolute document coordinates only during refresh. Native scroll can be
+  // re-anchored during resize before ScrollTrigger's cached scroll value updates.
+  const documentTop = element => element.getBoundingClientRect().top + window.scrollY;
 
   // Bounded font wait: a slow connection must never hold the page behind a loader.
   Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(resolve => setTimeout(resolve, 250))]).then(() => {
     if (disposed) return;
-    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)', tall: '(min-height: 650px)', closingRoom: '(min-height: 480px)', closingMobile: '(max-width: 768px)' }, context => {
-      if (!context.conditions.motion) { menuMotion?.revert(); menuMotion = null; releaseIntro(); return; }
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)', tall: '(min-height: 650px)', closingRoom: '(min-width: 769px) and (min-height: 480px), (max-width: 768px) and (min-height: 620px)', closingMobile: '(max-width: 768px)', mobileMotion: '(max-width: 768px) and (min-height: 500px)' }, context => {
+      if (!context.conditions.motion) { menuMotion?.revert(); menuMotion = null; motionReady = true; releaseIntro(); refreshGeometry(); return; }
       const desktop = context.conditions.desktop && !lowPower;
-      const sequenced = desktop && context.conditions.tall;
+      const mobileMotion = context.conditions.mobileMotion && !lowPower;
+      const sequenced = (desktop && context.conditions.tall) || mobileMotion;
       const splitters = [], restores = [], pointerEvents = new AbortController();
       const distance = desktop ? 32 : 18;
       let scrollFrame;
@@ -228,7 +274,11 @@
           }
         }));
       });
-      all('.eyebrow').forEach(el => gsap.from(el, { clipPath: 'inset(0 100% 0 0)', duration: .7, ease: 'power3.out', scrollTrigger: enter(el), clearProps: clean }));
+      all('.eyebrow').forEach(el => {
+        // The finale owns every reveal in its scrub timeline.
+        if (el.closest('.closing')) return;
+        gsap.from(el, { clipPath: 'inset(0 100% 0 0)', duration: .7, ease: 'power3.out', scrollTrigger: enter(el), clearProps: clean });
+      });
       all('.service').forEach((card, i) => {
         gsap.timeline({ defaults: { ease: 'power3.out' }, scrollTrigger: enter(card) })
           .from(card, { clipPath: 'inset(0 0 100% 0 round 7px)', y: distance, duration: .72, delay: (i % 2) * .09, clearProps: clean })
@@ -241,21 +291,21 @@
         gsap.set('.approach-line', { yPercent: 250 });
         gsap.set('.inner-rays line,.outer-rays line', { strokeDasharray: (_, line) => line.getTotalLength(),
           strokeDashoffset: (_, line) => line.getTotalLength(), opacity: 0 });
-        gsap.set('.approach-copy,.cream-button', { opacity: 0, y: 24 });
-        const opening = gsap.timeline({ scrollTrigger: { trigger: approachTrack,
-          start: 'top top', end: 'bottom bottom', scrub: .55, invalidateOnRefresh: true } });
-        opening.fromTo('.approach-panel', { clipPath: 'inset(20% 40% 20% 40% round 16px)' },
+        gsap.set('.approach-copy,.approach .cream-button', { opacity: 0, y: 24 });
+        const opening = gsap.timeline({ scrollTrigger: { id: 'vf-approach', trigger: approachTrack,
+          start: () => documentTop(approachTrack), end: () => documentTop(approachTrack) + approachTrack.offsetHeight - innerHeight, scrub: .55, invalidateOnRefresh: true } });
+        opening.fromTo('.approach-panel', { clipPath: mobileMotion ? 'inset(16% 30% 16% 30% round 16px)' : 'inset(20% 40% 20% 40% round 16px)' },
           { clipPath: 'inset(0% 0% 0% 0% round 16px)', duration: 1.5, ease: 'power2.inOut' }, 0)
           .to('.inner-rays line', { strokeDashoffset: 0, opacity: 1, duration: .4, stagger: { amount: 1.3 }, ease: 'none' }, 0)
           .to('.outer-rays line', { strokeDashoffset: 0, opacity: 1, duration: .65, stagger: { amount: .35, from: 'center' }, ease: 'none' }, .65)
           .to('.approach-line', { yPercent: 0, duration: .9, stagger: .1, ease: 'power3.out' }, .6)
           .to('.approach-meta', { opacity: 0, duration: .2 }, .45)
-          .to('.approach-copy,.cream-button', { opacity: 1, y: 0, duration: .7, stagger: .12, ease: 'power3.out' }, 1.35);
+          .to('.approach-copy,.approach .cream-button', { opacity: 1, y: 0, duration: .7, stagger: .12, ease: 'power3.out' }, 1.35);
       } else {
         gsap.timeline({ scrollTrigger: enter('.approach-panel'), defaults: { ease: 'power3.out' } })
           .from('.approach-panel', { clipPath: 'inset(5% 2% 5% 2% round 15px)', duration: .8, clearProps: clean })
           .from('.inner-rays line', { opacity: 0, duration: .5, stagger: { amount: .45 }, clearProps: clean }, .12)
-          .from('.approach-line,.approach-copy,.cream-button', { y: 18, opacity: 0, duration: .65, stagger: .08, clearProps: clean }, .25);
+          .from('.approach-line,.approach-copy,.approach .cream-button', { y: 18, opacity: 0, duration: .65, stagger: .08, clearProps: clean }, .25);
       }
       gsap.from('#systems-heading', { clipPath: 'inset(0 0 100% 0)', y: 20, duration: .85, ease: 'power3.out', scrollTrigger: enter('#systems-heading'), clearProps: clean });
       gsap.from('.underlined', { '--line-scale': 0, duration: .7, ease: 'power3.inOut', scrollTrigger: enter('#systems-heading', 'top 65%') });
@@ -263,29 +313,23 @@
       diagram.from('.system-hub', { scale: .7, transformOrigin: 'center center', opacity: 0, duration: .4, clearProps: 'transform,opacity' })
         .fromTo('.system-connections path', { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, autoRound: false, duration: .8, stagger: .1, clearProps: 'strokeDasharray,strokeDashoffset' }, .15)
         .from('.system-node', { opacity: 0, scale: .93, transformOrigin: 'center center', duration: .5, stagger: .12, clearProps: 'transform,opacity' }, .32);
-      if (desktop) {
-        $('.pillars').classList.add('has-parallax');
-        $('.purpose').classList.add('has-parallax');
-        restores.push(() => { $('.pillars').classList.remove('has-parallax'); $('.purpose').classList.remove('has-parallax'); });
-      }
-      all('.pillar').forEach(row => {
+      $('.pillars').classList.add('has-parallax');
+      restores.push(() => $('.pillars').classList.remove('has-parallax'));
+      all('.pillar').forEach((row, index) => {
         const number = row.querySelector('.pillar-number');
-        if (desktop) {
-          const motion = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 95%',
-            end: 'bottom 15%', scrub: .55, invalidateOnRefresh: true } });
-          motion.from(row, { '--rule-scale': 0, duration: .4 }, 0)
-            .from(number, { yPercent: 42, clipPath: 'inset(0 0 100% 0)', duration: .35, ease: 'power2.out' }, 0)
-            .from(row.querySelector('p'), { opacity: 0, y: 14, duration: .25 }, .08);
-          row.querySelectorAll('.stack-layer').forEach((layer, i) => {
-            motion.fromTo(layer, { yPercent: 14 + i * 5, rotation: [-8, 6, 3][i] },
-              { yPercent: -9 - i * 3, rotation: [-13, 8, -2][i], duration: 1, ease: 'none' }, 0);
-          });
-        } else gsap.from(row, { y: 20, opacity: .4, duration: .8, ease: 'power3.out', scrollTrigger: enter(row), clearProps: clean });
+        const motion = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: {
+          id: 'vf-pillar-' + index, trigger: row, start: () => documentTop(row) - innerHeight, end: () => documentTop(row) + row.offsetHeight,
+          scrub: desktop ? .45 : .25, invalidateOnRefresh: true
+        } });
+        // The glyph travels for the entire row interval, including its exit.
+        motion.fromTo(number, { yPercent: desktop ? 64 : 30, scale: 1.04 },
+          { yPercent: desktop ? -58 : -26, scale: .96, duration: 1 }, 0)
+          .fromTo(row, { '--rule-scale': .15 }, { '--rule-scale': 1, duration: .5 }, 0);
+        row.querySelectorAll('.stack-layer').forEach((layer, i) => {
+          motion.fromTo(layer, { yPercent: 11 + i * 4, rotation: [-9, 6, 1][i] },
+            { yPercent: -8 - i * 3, rotation: [-5, 3, -1][i], duration: 1 }, 0);
+        });
       });
-      gsap.timeline({ scrollTrigger: enter('.contact'), defaults: { ease: 'power3.out' } })
-        .from('.contact-rule', { scaleX: 0, transformOrigin: 'left center', duration: 1, clearProps: clean })
-        .from('.contact-mark', { clipPath: 'inset(0 100% 0 0)', x: -8, duration: .7, clearProps: clean }, .15);
-      gsap.from('.contact .split-button', { y: 20, clipPath: 'inset(0 0 100% 0)', duration: .8, ease: 'power3.out', scrollTrigger: enter('.contact .split-button'), clearProps: clean });
 
       // New method chapter: native sticky positioning, with one scroll timeline.
       const methodTrack = $('.method-track');
@@ -303,8 +347,8 @@
         syncMethod(0);
         restores.push(() => methodSteps.forEach(step => step.removeAttribute('aria-hidden')));
         gsap.set(methodSteps.slice(1), { opacity: 0, y: 20, clipPath: 'inset(0 0 100% 0)' });
-        const sequence = gsap.timeline({ scrollTrigger: { trigger: methodTrack,
-          start: 'top top', end: 'bottom bottom', scrub: .4, invalidateOnRefresh: true,
+        const sequence = gsap.timeline({ scrollTrigger: { id: 'vf-method', trigger: methodTrack,
+          start: () => documentTop(methodTrack), end: () => documentTop(methodTrack) + methodTrack.offsetHeight - innerHeight, scrub: .4, invalidateOnRefresh: true,
           onRefresh(self) { syncMethod(self.animation?.time() || 0); } },
           onUpdate() { syncMethod(this.time()); } });
         const arc = $('.method-progress'), circumference = arc.getTotalLength();
@@ -318,95 +362,106 @@
         });
         syncMethod(sequence.time());
       } else methodSteps.forEach(step => gsap.from(step, { y: 18, clipPath: 'inset(0 0 100% 0)', duration: .7, ease: 'power3.out', scrollTrigger: enter(step), clearProps: clean }));
+      const planTrack = $('.plan-track'), planRows = all('.plan-row');
+      if (mobileMotion) {
+        planTrack.classList.add('is-stacked');
+        restores.push(() => {
+          planTrack.classList.remove('is-stacked');
+          planRows.forEach(row => row.removeAttribute('aria-hidden'));
+        });
+        const syncPlan = time => planRows.forEach((row, i) => row.setAttribute('aria-hidden', String(i !== Math.min(3, Math.floor(time + .18)))));
+        syncPlan(0);
+        gsap.set(planRows.slice(1), { opacity: 0, xPercent: 14, yPercent: 5, scale: .97 });
+        const roadmap = gsap.timeline({ scrollTrigger: {
+          id: 'vf-roadmap-mobile', trigger: planTrack,
+          start: () => documentTop(planTrack),
+          end: () => documentTop(planTrack) + planTrack.offsetHeight - innerHeight,
+          scrub: .35, invalidateOnRefresh: true,
+          onRefresh(self) { syncPlan(self.animation?.time() || 0); }
+        }, onUpdate() { syncPlan(this.time()); } });
+        planRows.slice(0, -1).forEach((row, i) => {
+          roadmap.to(row, { xPercent: -8, yPercent: -3, scale: .97, opacity: 0, duration: .2, ease: 'power2.inOut' }, i + .65)
+            .to(planRows[i + 1], { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, duration: .26, ease: 'power2.out' }, i + .8);
+        });
+        roadmap.to({}, { duration: .3 }, 3.7);
+      } else {
       all('.plan-row').forEach((row, i) => {
         if (desktop) {
           gsap.fromTo(row, { x: () => innerWidth * (.18 + i * .035) },
             { x: 0, ease: 'none', scrollTrigger: { trigger: row,
-              start: 'top bottom', end: 'top 22%', scrub: .65, invalidateOnRefresh: true } });
+              start: () => documentTop(row) - innerHeight, end: () => documentTop(row) - innerHeight * .22, scrub: .65, invalidateOnRefresh: true } });
         } else gsap.from(row, { y: 18, opacity: .4, duration: .7,
           ease: 'power3.out', scrollTrigger: enter(row), clearProps: clean });
       });
+      }
       all('.experience-card').forEach((card, i) => {
         gsap.timeline({ scrollTrigger: enter(card), defaults: { ease: 'power3.out' } })
           .from(card, { clipPath: 'inset(0 0 100% 0 round 7px)', duration: .75,
             delay: (i % (innerWidth > 768 ? 3 : 2)) * .065, clearProps: clean })
           .from(card.querySelector('img'), { y: 14, scale: .97, duration: .7, clearProps: clean }, '<+.08');
       });
-      all('.purpose-card').forEach((card, i) => {
-        if (desktop) gsap.fromTo(card, { y: 90, rotation: [-5, 4, -3][i] },
-          { y: -25, rotation: [-2, 2, -1][i], ease: 'none', scrollTrigger: { trigger: card,
-            start: 'top bottom', end: 'bottom 18%', scrub: .7, invalidateOnRefresh: true } });
-        else gsap.from(card, { y: 22, opacity: .35, duration: .75, scrollTrigger: enter(card), clearProps: clean });
-      });
-      all('.principle-card').forEach(card => {
-        if (desktop) gsap.fromTo(card, { y: 35, opacity: .45 },
-          { y: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: card,
-            start: 'top 90%', end: 'top 35%', scrub: .6 } });
-        else gsap.from(card, { y: 20, opacity: .4, duration: .75,
-          ease: 'power3.out', scrollTrigger: enter(card), clearProps: clean });
-      });
-
       const closingTrack = $('.closing-track');
       const closingStage = $('.closing-stage');
-      if (context.conditions.closingRoom) {
+      if (context.conditions.closingRoom && !lowPower) {
         const mobileFinale = context.conditions.closingMobile;
-        // Nested context scopes every finale tween and reverts it on breakpoint/exit.
+        // One scoped, reversible timeline owns the logo, aperture and content.
         const closingContext = gsap.context(() => {
-          const letters = all('.closing-letter');
-          const type = $('.closing-type');
-          const heading = $('.closing-heading');
-          const art = $('.closing-art');
-          const originalViewBox = type.getAttribute('viewBox');
-          const originalX = letters.map(letter => letter.getAttribute('x'));
-          let centers = [], nameWidth = 1;
-          const measureName = () => {
-            const widths = letters.map(letter => letter.getComputedTextLength());
-            let cursor = 0;
-            centers = widths.map((width, i) => {
-              if (i === 8) cursor += 130; // The space between the two words.
-              const center = cursor + width / 2;
-              letters[i].setAttribute('x', center);
-              cursor += width + 8;
-              return center;
-            });
-            nameWidth = cursor;
-            type.setAttribute('viewBox', `0 0 ${nameWidth} 600`);
+          const scene = $('.closing-scene'), curtain = $('.closing-curtain');
+          const signature = $('.closing-signature'), aperture = $('.closing-aperture');
+          const portrait = $('.closing-portrait-plane'), contact = $('.closing-contact');
+          const copy = all('.closing-label,.closing-contact h2,.closing-description,.closing-cta');
+          const positions = all('.closing-mask-position,.closing-logo-position');
+          let coverZoom = 1;
+          const measureReveal = () => {
+            const width = closingStage.clientWidth, height = closingStage.clientHeight;
+            // Geometry is measured on refresh only, never during animation frames.
+            const unit = Math.min(180, Math.max(92, width * .12)) / 80;
+            curtain.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            closingTrack.style.setProperty('--closing-distance', Math.round(innerHeight * (mobileFinale ? 1.2 : 1.7)) + 'px');
+            positions.forEach(position => position.setAttribute('transform',
+              `translate(${width / 2 - 40 * unit} ${height / 2 - 24 * unit}) scale(${unit})`));
+            // (30,28) lies inside the V; expanding about it avoids an empty center.
+            coverZoom = Math.max(width, height) / (unit * 3);
           };
-          measureName();
-          closingTrack.classList.add('is-opening');
-          const movingParts = [...letters, heading, art];
-          const hintCompositing = active => movingParts.forEach(el => { el.style.willChange = active ? 'transform' : ''; });
+          closingTrack.classList.add('is-revealing');
+          measureReveal();
+          const hintCompositing = active => {
+            curtain.style.willChange = active ? 'opacity' : '';
+            copy.forEach(el => { el.style.willChange = active ? 'transform,opacity' : ''; });
+          };
           restores.push(() => {
-            closingContext.revert();
-            closingTrack.classList.remove('is-opening');
-            hintCompositing(false);
-            type.setAttribute('viewBox', originalViewBox);
-            letters.forEach((letter, i) => letter.setAttribute('x', originalX[i]));
+            if (!closingContext.isReverted) closingContext.revert();
+            closingTrack.classList.remove('is-revealing');
+            closingTrack.style.removeProperty('--closing-distance');
+            hintCompositing(false); contact.inert = false;
+            aperture.removeAttribute('transform');
+            positions.forEach(position => position.removeAttribute('transform'));
+            curtain.removeAttribute('viewBox');
           });
-          // No time-based entrance: scroll owns compression, opening and the full-bleed reveal.
           const finale = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: {
-            id: 'vf-editorial-finale', trigger: closingTrack,
-            start: () => closingTrack.getBoundingClientRect().top + window.scrollY,
-            end: () => '+=' + Math.round(innerHeight * (mobileFinale ? 2 : 2.8)),
+            id: 'vf-brand-finale', trigger: closingTrack,
+            start: () => documentTop(closingTrack),
+            end: () => '+=' + Math.round(innerHeight * (mobileFinale ? 1.2 : 1.7)),
             pin: closingStage, pinType: 'transform', pinSpacing: true, anticipatePin: 1,
-            scrub: true, invalidateOnRefresh: true,
-            onRefreshInit: measureName, onToggle: self => hintCompositing(self.isActive)
+            scrub: true, invalidateOnRefresh: true, onRefreshInit: measureReveal,
+            onToggle: self => hintCompositing(self.isActive),
+            onRefresh: self => { contact.inert = self.progress < .86; },
+            onUpdate: self => { contact.inert = self.progress < .86; }
           } });
-          finale.fromTo(letters,
-              { x: i => (nameWidth / 2 - centers[i]) * .985 },
-              { x: 0, duration: .5 }, .05)
-            .fromTo(heading, { scale: mobileFinale ? 1.5 : 1.65, opacity: 1, transformOrigin: '50% 50%' },
-              { scale: 1, duration: .5 }, .05)
-            .fromTo(art, { width: '18%', height: mobileFinale ? '12%' : '18%', opacity: 0,
-              clipPath: 'inset(12% 12% 12% 12% round 10px)' },
-              { width: '44%', height: mobileFinale ? '26%' : '44%', opacity: 1,
-                clipPath: 'inset(0% 0% 0% 0% round 10px)', duration: .27 }, .28)
-            .to(letters, { x: i => (i < 8 ? -1 : 1) * nameWidth * (mobileFinale ? .58 : .68),
-              duration: .3 }, .58)
-            .to(art, { width: '100%', height: mobileFinale ? '68%' : '100%',
-              clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: .36 }, .57)
-            .to(heading, { opacity: 0, duration: .12 }, .81)
-            .to({}, { duration: .07 }, .93);
+          contact.inert = true;
+          finale.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: .12 }, .27)
+            .fromTo(signature, { opacity: 0, scale: .92, svgOrigin: '40 24' },
+              { opacity: 1, scale: 1, duration: .1, ease: 'power2.out' }, 0)
+            .to(signature, { opacity: 0, duration: .06 }, .28)
+            .fromTo(aperture, { attr: { transform: 'translate(30 28) scale(1) translate(-30 -28)' } },
+              { attr: { transform: () => `translate(30 28) scale(${coverZoom}) translate(-30 -28)` },
+                duration: .5, ease: 'power2.in' }, .30)
+            .fromTo(curtain, { opacity: 1 }, { opacity: 0, duration: .14 }, .68)
+            .fromTo(portrait, { opacity: 0, y: 12 },
+              { opacity: 1, y: 0, duration: .2, ease: 'power2.out' }, .38)
+            .fromTo(copy, { opacity: 0, y: 14 }, { opacity: 1, y: 0,
+              duration: .16, stagger: .035, ease: 'power2.out' }, .65)
+            .to({}, { duration: .085 }, .915);
         }, closingTrack);
       }
 
@@ -439,6 +494,7 @@
           listenPointer(button, 'pointerleave', () => { x(0); y(0); });
         });
       }
+      motionReady = true;
       refreshGeometry();
       return () => {
         releaseIntro();

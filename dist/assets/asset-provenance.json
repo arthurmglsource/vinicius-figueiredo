@@ -26,5 +26,87 @@
   "automation-panel": {
     "source": "Original SVG created in this project",
     "note": "Painel vetorial profissional, sem dados de clientes ou resultados comerciais inventados."
+  },
+  "vinicius-final-original": {
+    "source": "Anexo 13 do prompt master de 4/10/2026: codex-clipboard-a148d507-55f7-4004-a68c-c7f17ee9f4ab.png",
+    "dimensions": [
+      1122,
+      1402
+    ],
+    "sha256": "7061f8bb101582ce50d6ef8c13d0ce126a722a5bf85b92d0f0088e5e958ed32d",
+    "note": "PNG original copiado byte a byte. Sem geração, filtro, retoque ou alteração da Apple.",
+    "status": "Uso proibido pelo usuário em 17/10/2026. Sem referências no HTML/CSS/JS; arquivo retirado da distribuição e preservado apenas no arquivo de trabalho."
+  },
+  "editorial-grain": {
+    "source": "SVG original escrito no projeto",
+    "file": "editorial-grain.svg",
+    "note": "Padrão de pontos em camada independente, atrás da fotografia; opacidade 0,12 e máscara fora da área central.",
+    "status": "Arquivo histórico; não carregado nem utilizado no fechamento atual."
+  },
+  "vinicius-closing-clean": {
+    "source": "Anexo original 3 recebido em 15/10/2026: codex-clipboard-447ed62b-60d6-4f3d-82ac-4b8bfbd85b12.png",
+    "file": "vinicius-closing-clean.png",
+    "dimensions": [
+      1122,
+      1402
+    ],
+    "sha256": "fa1eb6a5c29893a49532f4d20dafef3217f7672b90caf3db1e24c8c76b647b04",
+    "note": "PNG copiado byte a byte. Rosto, pele, pose, roupa, relógio e notebook sem retoque, filtro ou geração. O arquivo recebido já corta a direita do notebook e não mostra a logo Apple; nenhum detalhe foi inventado.",
+    "status": "Histórico. Não é mais utilizado pelo fechamento; substituído pelo asset definitivo solicitado em 17/10/2026."
+  },
+  "closing-approved-reference": {
+    "source": "Anexo de 17/10/2026: codex-clipboard-5161c5f7-ee73-4be7-a1fe-043c35ec0154.png",
+    "file": "closing-approved-reference.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "sha256": "e2268278615486f723ce4c69941135fa98073af3694e9401931000d040009f33",
+    "method": "Histórico. Janela de referência e Apple separada removidas; não utilizado no fechamento atual.",
+    "referenceWindow": [
+      1544,
+      689,
+      38,
+      49
+    ],
+    "referencePortraitPlane": [
+      969.7578125,
+      45.6171875,
+      677.7578125,
+      846.8984375
+    ]
+  },
+  "vinicius-final-approved": {
+    "source": "Anexo definitivo de 17/10/2026: codex-clipboard-0627c7b2-0287-4ea6-a060-55fbba9a509a.png",
+    "file": "vinicius-final-approved.png",
+    "dimensions": [
+      1672,
+      941
+    ],
+    "sha256": "e77290278baa8628db6f78a7e8ffa88184390f02a4042b16aa5e15cf4de6e6f5",
+    "method": "Arquivo original copiado byte a byte, usado inteiro em desktop e com object-fit no mobile. Sem edição, máscara, clip-path ou deformação. Textos e CTA em HTML, com superfícies de cobertura somente sobre a copy e a UI rasterizadas; nenhuma cobertura atinge rosto, corpo, notebook ou mesa.",
+    "status": "Histórico. Não renderizado; substituído por composição nativa em camadas."
+  },
+  "vinicius-working-original": {
+    "source": "/Users/arthurmagalhaes/Downloads/vinicius_assets/02_recortes_transparentes/08_trabalhando_no_laptop.png",
+    "file": "vinicius-working-original.png",
+    "dimensions": [
+      1122,
+      1402
+    ],
+    "sha256": "e1c327c91595c064fdcb055b45b397eaa7eda8ab5a77f24508a8c7eb098451c7",
+    "use": "Rosto, pose, corpo, mão e teclado. Extração SVG sem edição do PNG.",
+    "method": "PNG original copiado byte a byte. Sem geração, edição ou recompressão."
+  },
+  "macbook-source-original": {
+    "source": "/Users/arthurmagalhaes/Downloads/vinicius_assets/02_recortes_transparentes/05_macbook_prata_recorte.png",
+    "file": "macbook-source-original.png",
+    "dimensions": [
+      1122,
+      1402
+    ],
+    "sha256": "ee0735e3516d109d4c30cb7f867e331497cce5759c2dedad6e35eb7eb424b6a2",
+    "use": "Somente a tampa completa e sua Apple original. Braço e teclado deste asset excluídos pelo contorno SVG.",
+    "method": "PNG original copiado byte a byte. Sem geração, edição ou recompressão."
   }
 }

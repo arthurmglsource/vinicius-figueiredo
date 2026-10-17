@@ -1,0 +1,11 @@
+{
+  "name": "vinicius-figueiredo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vinicius Figueiredo — Do lead ao fechamento, uma operação conectada.",
+  "scripts": {
+    "dev": "python3 -m http.server 54562 --directory dist",
+    "start": "python3 -m http.server 54562 --directory dist",
+    "test": "node tests/motion-regression.cjs"
+  }
+}

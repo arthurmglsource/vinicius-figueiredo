@@ -152,3 +152,98 @@ Esta revisão substitui a abertura vertical descrita na auditoria anterior do fe
 - Movimento reduzido simulado e ausência de GSAP/ScrollTrigger: nome estático legível, arte em proporção original e legenda disponíveis, sem pin-spacer e sem overflow. Preferência real do sistema não alterada.
 - 37 regressões de lógica com doubles passaram, incluindo sobreposição, dispersão horizontal, scrub, imagem final, cleanup e retorno ao fluxo. Sintaxe JavaScript, assets/HTTP, âncoras, dimensões de imagens, sequência de 12 seções, hash e diff passaram. Zero erros registrados na prévia durante a matriz.
 - Capturas e leituras em ../horizontal-closing-qa/. São testes de larguras CSS no computador, sem dispositivos físicos, leitor de tela ou métricas de produção. Sem promessa de equivalência pixel a pixel da referência. Nenhum push ou deploy.
+
+
+## Etapa final do prompt master — 4 de outubro de 2026
+
+Este bloco é a auditoria da versão atual. Os relatos anteriores são históricos e não validam automaticamente esta etapa.
+
+- Remoção integral dos dois blocos solicitados, incluindo estilos, timelines, âncoras obsoletas e wrappers. Nove seções principais, contato integrado à arte e footer em fluxo contínuo.
+- Introdução dos pilares com eyebrow, headline e CTA; três timelines agrupadas com scrub. Cada número percorre toda a janela de sua linha, de baixo para cima. Stacks com velocidades e rotações discretas. Testadas três linhas em 0/25/50/75/100% e retorno a 50/0%, nas seis larguras.
+- Abertura final com dezoito glifos em duas palavras. Compressão central, expansão exclusivamente em X, monumentalidade, reveal independente do retrato e expansão até a viewport. Pin único, scrub verdadeiro, cleanup e foco revisados. Eyebrow do contato excluído das entradas globais, deixando todos os reveals do fechamento sob a timeline de scrub.
+- Composição em camadas reais; fotografia original PNG idêntica ao anexo 13 em SHA-256. Face livre de textura, MacBook e Apple preservados. Dissolução inferior chega ao mesmo cream do footer, sem barra escura ou mesa destacada.
+- Espaço excedente em Experiências vinha da altura fixa herdada de `.section`; altura intrínseca elimina o resíduo sem mudar grid, cards ou heading. Sistemas tinha altura fixa e elementos absolutos; grid intrínseco preserva composição e remove a área vazia. Espaçamento de pin corresponde apenas à sequência animada, sem wrapper vazio depois do footer.
+- Hero, tokens de cor/tipografia e conteúdo de Abordagem, Método, Plano e Experiências comparados ao HEAD anterior. Geometria, assets da hero e logos oficiais preservados. Seletor da animação de CTA da Abordagem foi limitado à própria seção, evitando interferência nas novas CTAs.
+- Intervalos de Abordagem, Método, Plano e Pilares calculados com posição nativa do documento no refresh. Corrigido o valor desatualizado após redimensionamento com scroll avançado, preservando coreografia e durações existentes. Opacidades de textura/traço restauram corretamente em cada breakpoint.
+
+### Matriz atual — navegador integrado Chromium
+
+| Largura CSS | Altura CSS | Arte final | Overflow horizontal | Erros / imagens quebradas | Pin final |
+|---:|---:|---|---:|---|---:|
+| 1440 | 810 | 1440 × 810 | 0 | 0 / 0 | 1 |
+| 1280 | 720 | 1280 × 720 | 0 | 0 / 0 | 1 |
+| 1024 | 576 | 1024 × 576 | 0 | 0 / 0 | 1 |
+| 768 | 844 | 768 × 844 | 0 | 0 / 0 | 1 |
+| 430 | 844 | 430 × 844 | 0 | 0 / 0 | 1 |
+| 390 | 844 | 390 × 844 | 0 | 0 / 0 | 1 |
+
+- Introdução dos números, Sistemas, tipografia e arte inspecionados em desktop, tablet e mobile; transição arte/footer conferida. Reflow nos dois sentidos mantém um único trigger/pin final, sem camadas invisíveis ou rotações duplicadas.
+- Sequência final em 0/25/40/50/60/75/85/100% e retorno no desktop; 0/25/50/60/75/85/100% e retorno no mobile. Letras sem dispersão vertical, contato oculto sem foco prematuro, arte completa ao terminar e retorno suave.
+- Abordagem e Método conferidos em 0/50/100% e reversão, incluindo estado acessível das etapas. Menu abre/fecha por teclado. Controle de stack abre/fecha por clique real em viewport mobile.
+- Todos os seis links internos do footer testados por clique real em 1440 e 390px: destino e alinhamento corretos. Contato chega ao fim do pin. Instagram, LinkedIn e MGL mantêm os URLs confirmados, nova aba e noopener/noreferrer. Redes sociais podem bloquear verificações automáticas; disponibilidade dos perfis não é inferida de um bloqueio.
+- Movimento reduzido simulado e bibliotecas ausentes: zero triggers, sem pin, nome legível, arte e CTA acessíveis, overflow zero e sem loader preso. Regras CSS revisadas sem alterar preferências do sistema.
+- Observador de layout reiniciado após carregamento/medidas. Durante avanço/reversão da sequência final: CLS 0, nenhum evento de deslocamento de layout, console sem erros/avisos. Agendamento rAF local aproximadamente 60 callbacks/s e p95 17,2ms; não é medição de pintura/GPU nem Core Web Vitals de produção. Eventos gerados pela mudança deliberada da largura do iframe não representam scroll normal e continuam nos registros brutos da matriz.
+- 42 verificações de regressão com doubles de DOM/GSAP, sintaxe JS, validação HTML/âncoras/assets/HTTP/dimensões, hash original e diff sem erros. Testes de lógica não substituem inspeção visual.
+- Evidências em `../final-stage-qa/`: matriz JSON, seis auditorias dos pilares, fases desktop/mobile, navegação, movimento preservado, performance e capturas das seis larguras. Capturas finais limpas: `final-desktop.png`, `final-mobile.png`, `art-footer-desktop.png`.
+
+### Arquivos desta etapa
+
+- Site: `dist/index.html`, `dist/styles.css`, `dist/app.js`.
+- Assets: `dist/assets/vinicius-final-original.png`, `dist/assets/editorial-grain.svg`, `dist/assets/asset-provenance.json`.
+- Regressões: `tests/motion-regression.cjs`.
+- Documentação: `README.md`, `CLOSING-ASSET.md`, `QA.md`.
+- Suporte local à auditoria, fora do site: `../../work/qa-panel.html`, `../../work/validate_site.py` e `../../work/final-stage-qa/`.
+- Evidências: `../final-stage-qa/`. Esses arquivos de auditoria não são servidos como componentes do site.
+
+### Limitações reais da sessão atual
+
+- Safari nativo foi tentado novamente pelo nome e bundle ID; Chrome nativo também. O Mac está bloqueado e o controle nativo não conseguiu desbloqueá-lo. Não há teste Safari da versão atual; os registros Safari anteriores descrevem versões anteriores. A auditoria atual foi concluída no Chromium integrado, que permaneceu disponível.
+- São viewports CSS no computador, sem aparelhos físicos, leitor de tela ou métricas de produção.
+- `contactUrl` continua vazio no projeto. Sem WhatsApp, e-mail ou agenda confirmados, o botão mantém seu estado acessível de indisponibilidade. Não foi criado destino fictício.
+- Nenhum push, deploy ou publicação executado.
+
+## Novo pré-rodapé limpo / brand reveal — 16 de outubro de 2026
+
+Este é o fechamento atual. Substitui a solução anterior com letras monumentais e colagem; as demais seções e o footer continuam preservados.
+
+- Removidos dezoito glifos gigantes, VF de fundo, blocos, textura, rabiscos, linhas e a timeline anterior. Logo VF oficial em cream, hold e expansão em máscara SVG. Cena real em HTML/CSS, gradiente limpo, fotografia original, copy e CTA azul. Nenhum screenshot utilizado como cena pronta.
+- Uma timeline `vf-brand-finale`, scrub verdadeiro, 170vh desktop/tablet e 120vh mobile. Contexto e cleanup; medidas somente em refresh, transform SVG/opacity, nenhum width/height/top/left animado. Retrato permanece no enquadramento, sem zoom flutuante; copy entra depois em stagger. Um único pin final.
+- Acima do fechamento: HTML idêntico ao snapshot inicial, exceto preload do novo PNG e versões de cache CSS/JS. Footer completo, CSS global e tokens idênticos em bytes. Prova: `../brand-reveal-qa/scope-and-asset-proof.json`.
+- `#contact` fora do estágio pinado, alinhado à distância real do pin. Inicialização e refresh sincronizam os limites do Lenis antes do deep link. Clique de contato não é sobrescrito pelos anchors delegados. Foco liberado com a copy visível.
+
+| Viewport CSS | Pin final | Overflow | Erros do site / imagens quebradas |
+|---|---:|---:|---|
+| 1440 × 810 | 1 | 0 | 0 / 0 |
+| 1280 × 720 | 1 | 0 | 0 / 0 |
+| 1024 × 576 | 1 | 0 | 0 / 0 |
+| 768 × 844 | 1 | 0 | 0 / 0 |
+| 430 × 844 | 1 | 0 | 0 / 0 |
+| 390 × 844 | 1 | 0 | 0 / 0 |
+
+- Estados 20/45/100%, retorno a 45/0% e reconstrução nas seis larguras. Foto/copy legíveis, sem trigger duplicado. Tablet vertical adicional: 837 × 767, foto proporcional limitada à coluna, sem invadir o texto.
+- 390 × 568 e 1024 × 450 retornam ao fluxo sem pin; 390 × 667 mantém o pin reduzido. Movimento reduzido, bibliotecas ausentes e economia de recursos: cena estática acessível, sem pin/overflow/erros. Preferências do sistema não alteradas.
+- Safari e Chrome nativos: logo, máscara, retrato, estados intermediário/final e reversão inspecionados em 1440 × 810 e 390 × 843–844 CSS. Um pin, sem erros registrados e sem overflow positivo. Capturas e telemetria nativas preservadas. Arredondamento de até 1px no Safari com a escala CSS dessa janela.
+- Após as correções de âncora/Lenis, deep link e link de contato revalidados no Chromium integrado com progresso final 100%. A repetição desse último deep link nos navegadores nativos foi impedida pelo bloqueio do Mac; não é apresentada como teste nativo concluído.
+- Todos os seis links do footer testados por clique real em desktop/mobile. Alinhamento: 22px desktop, 86px mobile; Início e Contato em 0px. URLs sociais/MGL preservadas. Gap entre cena e footer medido em 0px nas duas larguras.
+- 45 regressões de lógica passaram: carregamento antes do motion, limites do Lenis, cleanup, breakpoint, máscara, foco, movimento reduzido, fallback e navegação. Sintaxe, HTML/âncoras/assets/HTTP/dimensões, hash original e diff verificados.
+- Leituras de CLS dos relatórios que redimensionam o iframe incluem alterações deliberadas de largura; não são métricas de produção nem medição de pintura/GPU. Sem teste em aparelhos físicos.
+
+Limites: o recorte prioritário recebido não contém Apple visível e corta a lateral do notebook; mantido intacto, sem logo artificial. O prompt menciona quatro imagens; foram recebidas três. `contactUrl` permanece vazio, com CTA acessivelmente indisponível e sem destino fictício. Sem deploy, push ou publicação.
+
+Arquivos desta solicitação: `dist/index.html`, `dist/styles.css`, `dist/app.js`, `dist/assets/vinicius-closing-clean.png`, `dist/assets/asset-provenance.json`, `tests/motion-regression.cjs`, `README.md`, `CLOSING-ASSET.md`, `QA.md`. Suporte local em `../../work/brand-reveal-qa/` e `../../work/validate_site.py`; evidências em `../brand-reveal-qa/`.
+
+## Auditoria final de produção — retomada de 16/10/2026
+
+O relatório atual é [FINAL-QA.md](FINAL-QA.md). Substitui os estados antigos de contato e asset descritos acima: agora a configuração usa `whatsappNumber`/`whatsappMessage`, o original com Apple está restaurado e a mesa termina em diagonal CSS até o footer. Hero mobile 100svh; abertura radial, diagnóstico 1/4–4/4 e roadmap mantêm scrub no mobile. Hero desktop, footer e copy preservados nesta etapa.
+
+Matriz exata Chromium 1440/1280/1024/768/430/393/390: 70 estados de seção, zero overflow/imagens quebradas/erros; gap final/footer 0px nas sete larguras. Safari nativo acessível novamente: Hero/fechamento nas sete larguras e estados finais radial/roadmap, sem erros ou overflow positivo. 51 regressões aprovadas. Testes de altura 844/740/568, reduced motion e fallback concluídos. Evidências em `../final-production-qa/`.
+
+Pendência real: nenhum número oficial encontrado; as 13 CTAs compartilham integração pronta, mas NÃO abrem WhatsApp real enquanto `whatsappNumber` permanecer vazio. Sem mensagem temporária na interface e sem número inventado. Sem aparelho iPhone físico; Safari iOS com barra dinâmica real não testado. Sem deploy.
+
+## Três ajustes cirúrgicos — 16/10/2026
+
+Relatório atual: [THREE-ADJUSTMENTS-QA.md](THREE-ADJUSTMENTS-QA.md). Foto original do print principal 01, Apple, enquadramento e mesa diagonal preservados; gap mesa/footer 0px nas sete larguras. Header reutiliza o sistema split CTA, com fontes, alturas, paddings, ícone, raio e transições conferidos contra o CTA aprovado de Sistemas. Copy visível e acessível sem hífen/en dash/em dash, com reescrita natural; destinos, IDs e nomes de assets preservados. `app.js`/`config.js` intactos. 35 estados em sete tamanhos, sem overflow/imagens quebradas/erros/triggers duplicados; 51 regressões aprovadas. Esta rodada foi validada no Chromium integrado; tentativa Safari nativo interrompida por mudança de estado do aplicativo. Sem deploy.
+
+## Recorte obrigatório confirmado pelo usuário — 16/10/2026
+
+Relatório atual: [CLOSING-REFERENCE-QA.md](CLOSING-REFERENCE-QA.md). O `<img>` final agora usa exatamente o PNG anexado com cadeira, pose e mão no queixo: hash `fa1eb6a5c29893a49532f4d20dafef3217f7672b90caf3db1e24c8c76b647b04`. A escolha anterior de retrato foi substituída. A marca do MacBook usa pixels do material original em uma janela SVG, sem desenho fictício. Mesa acompanha a perspectiva da referência e encontra o footer. Corpo/rosto do PNG sem alteração; footer e todas as seções anteriores idênticos ao snapshot desta solicitação. Oito tamanhos desktop/tablet/mobile, zero overflow/imagens quebradas/erros da página/triggers duplicados, scrub reversível, reduced motion e fallback verificados; 51 regressões aprovadas. Sem publicação.

@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".9" fill="#F8F3F0"/><circle cx="6" cy="6" r=".55" fill="#101317"/></pattern></defs><path fill="url(#dots)" d="M0 0h200v200H0z"/></svg>
