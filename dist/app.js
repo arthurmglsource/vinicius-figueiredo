@@ -197,6 +197,7 @@
   });
   if (!window.gsap || !window.ScrollTrigger) { releaseIntro(); return; }
   gsap.registerPlugin(ScrollTrigger);
+  if (ScrollTrigger.config) ScrollTrigger.config({ ignoreMobileResize: true });
   if (window.SplitText) gsap.registerPlugin(SplitText);
   const mm = gsap.matchMedia();
   disposeMotion = () => mm.revert();
@@ -228,7 +229,7 @@
   // Bounded font wait: a slow connection must never hold the page behind a loader.
   Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(resolve => setTimeout(resolve, 250))]).then(() => {
     if (disposed) return;
-    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)', tall: '(min-height: 650px)', closingRoom: '(min-width: 769px) and (min-height: 480px), (max-width: 768px) and (min-height: 620px)', closingMobile: '(max-width: 768px)', mobileMotion: '(max-width: 768px) and (min-height: 500px)' }, context => {
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1025px) and (hover: hover) and (pointer: fine)', tall: '(min-height: 650px)', closingRoom: '(min-width: 769px) and (min-height: 480px), (max-width: 768px) and (min-height: 380px)', closingMobile: '(max-width: 768px)', mobileMotion: '(max-width: 768px) and (min-height: 380px)' }, context => {
       if (!context.conditions.motion) { menuMotion?.revert(); menuMotion = null; motionReady = true; releaseIntro(); refreshGeometry(); return; }
       const desktop = context.conditions.desktop && !lowPower;
       const mobileMotion = context.conditions.mobileMotion && !lowPower;
@@ -445,25 +446,41 @@
             start: () => documentTop(closingTrack),
             end: () => '+=' + Math.round(innerHeight * (mobileFinale ? 1.2 : 1.7)),
             pin: closingStage, pinType: 'transform', pinSpacing: true, anticipatePin: 1,
-            scrub: true, invalidateOnRefresh: true, onRefreshInit: measureReveal,
+            scrub: mobileFinale ? .35 : true, invalidateOnRefresh: true, onRefreshInit: measureReveal,
             onToggle: self => hintCompositing(self.isActive),
-            onRefresh: self => { contact.inert = self.progress < .86; },
-            onUpdate: self => { contact.inert = self.progress < .86; }
+            onRefresh: self => { contact.inert = self.progress < (mobileFinale ? .72 : .86); },
+            onUpdate: self => { contact.inert = self.progress < (mobileFinale ? .72 : .86); }
           } });
           contact.inert = true;
-          finale.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: .12 }, .27)
-            .fromTo(signature, { opacity: 0, scale: .92, svgOrigin: '40 24' },
-              { opacity: 1, scale: 1, duration: .1, ease: 'power2.out' }, 0)
-            .to(signature, { opacity: 0, duration: .06 }, .28)
-            .fromTo(aperture, { attr: { transform: 'translate(30 28) scale(1) translate(-30 -28)' } },
-              { attr: { transform: () => `translate(30 28) scale(${coverZoom}) translate(-30 -28)` },
-                duration: .5, ease: 'power2.in' }, .30)
-            .fromTo(curtain, { opacity: 1 }, { opacity: 0, duration: .14 }, .68)
-            .fromTo(portrait, { opacity: 0, y: 12 },
-              { opacity: 1, y: 0, duration: .2, ease: 'power2.out' }, .38)
-            .fromTo(copy, { opacity: 0, y: 14 }, { opacity: 1, y: 0,
-              duration: .16, stagger: .035, ease: 'power2.out' }, .65)
-            .to({}, { duration: .085 }, .915);
+          if (mobileFinale) {
+            finale.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: .1 }, .18)
+              .fromTo(signature, { opacity: 0, scale: .92, svgOrigin: '40 24' },
+                { opacity: 1, scale: 1, duration: .08, ease: 'power2.out' }, 0)
+              .to(signature, { opacity: 0, duration: .05 }, .2)
+              .fromTo(aperture, { attr: { transform: 'translate(30 28) scale(1) translate(-30 -28)' } },
+                { attr: { transform: () => `translate(30 28) scale(${coverZoom}) translate(-30 -28)` },
+                  duration: .44, ease: 'power2.in' }, .22)
+              .fromTo(curtain, { opacity: 1 }, { opacity: 0, duration: .12 }, .54)
+              .fromTo(portrait, { opacity: 0, y: 12 },
+                { opacity: 1, y: 0, duration: .18, ease: 'power2.out' }, .28)
+              .fromTo(copy, { opacity: 0, y: 14 }, { opacity: 1, y: 0,
+                duration: .15, stagger: .03, ease: 'power2.out' }, .50)
+              .to({}, { duration: .27 }, .73);
+          } else {
+            finale.fromTo(scene, { opacity: 0 }, { opacity: 1, duration: .12 }, .27)
+              .fromTo(signature, { opacity: 0, scale: .92, svgOrigin: '40 24' },
+                { opacity: 1, scale: 1, duration: .1, ease: 'power2.out' }, 0)
+              .to(signature, { opacity: 0, duration: .06 }, .28)
+              .fromTo(aperture, { attr: { transform: 'translate(30 28) scale(1) translate(-30 -28)' } },
+                { attr: { transform: () => `translate(30 28) scale(${coverZoom}) translate(-30 -28)` },
+                  duration: .5, ease: 'power2.in' }, .30)
+              .fromTo(curtain, { opacity: 1 }, { opacity: 0, duration: .14 }, .68)
+              .fromTo(portrait, { opacity: 0, y: 12 },
+                { opacity: 1, y: 0, duration: .2, ease: 'power2.out' }, .38)
+              .fromTo(copy, { opacity: 0, y: 14 }, { opacity: 1, y: 0,
+                duration: .16, stagger: .035, ease: 'power2.out' }, .65)
+              .to({}, { duration: .085 }, .915);
+          }
         }, closingTrack);
       }
 

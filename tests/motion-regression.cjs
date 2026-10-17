@@ -201,7 +201,15 @@ async function boot(options={}) {
   check('Touch stroke responds to pointerdown without consuming the CTA click',()=>{let prevented=0;h.services[0].emit('pointerdown');assert(h.services[0].classes.has('is-active'));h.services[0].emit('click',{preventDefault(){prevented++;}});assert.equal(prevented,0);h.services[0].emit('blur');assert(!h.services[0].classes.has('is-active'));});
   check('Stack controls expose state and retain panel subject',()=>{h.stacks[0].emit('click');assert.equal(h.stacks[0].attrs['aria-expanded'],'true');assert.equal(h.stacks[0].attrs['aria-label'],'Fechar composição: panel0');h.stacks[0].emit('click');assert.equal(h.stacks[0].attrs['aria-label'],'Abrir composição: panel0');assert(!h.stacks[0].parent.classes.has('is-expanded'));});
   h=await boot({desktop:false,closingMobile:true});
-  check('Mobile brand reveal keeps native scroll and reduces pin duration to 120vh',()=>{const t=h.timelines.find(t=>t.opts?.scrollTrigger?.id==='vf-brand-finale');assert(t);assert.equal(t.opts.scrollTrigger.end(),'+=1080');assert(t.calls.some(c=>c[0]==='fromTo'&&c[1]===h.get('.closing-scene')));assert.equal(h.ticks.size,0);});
+  check('Mobile brand reveal keeps native scroll, smooth scrub damping and end hold buffer',()=>{
+    const t=h.timelines.find(t=>t.opts?.scrollTrigger?.id==='vf-brand-finale');
+    assert(t);assert.equal(t.opts.scrollTrigger.end(),'+=1080');
+    assert.equal(t.opts.scrollTrigger.scrub,0.35);
+    assert(t.calls.some(c=>c[0]==='fromTo'&&c[1]===h.get('.closing-scene')));
+    t.opts.scrollTrigger.onUpdate({progress:0.75});assert.equal(h.get('.closing-contact').inert,false);
+    t.opts.scrollTrigger.onUpdate({progress:1});assert.equal(h.get('.closing-contact').inert,false);
+    assert.equal(h.ticks.size,0);
+  });
   h.mm.switch({closingRoom:false});
   check('Very short viewport removes finale pin context',()=>assert(!h.get('.closing-track').classes.has('is-revealing')));
   h=await boot();h.flush();const beforeImage=h.refreshes;h.get('.closing-art-image').emit('load');h.flush();
