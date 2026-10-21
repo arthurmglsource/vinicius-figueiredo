@@ -28,13 +28,11 @@ async function boot(options={}) {
   doc.querySelector=get;doc.querySelectorAll=s=>groups.get(s)||[];doc.getElementById=id=>get('#'+id);
   doc.documentElement=new Element('html');doc.documentElement.classList.add('intro-pending');
   doc.fonts=new Element('fonts');doc.fonts.ready=Promise.resolve();
-  const toggles=many('[aria-controls="menu-dialog"]',2), services=many('.service',4), steps=many('.method-step',4), stacks=many('.stack-toggle',3);
-  many('[data-contact]',13).forEach(a=>a.setAttribute('href','#contact'));many('a[href="#contact"]',2);many('a[href="#contact"]:not(.footer-nav a),a[data-contact]',4);many('a[href="#contact"]:not(.footer-nav a)',2);many('[data-lines]',1);many('.eyebrow',2).forEach((el,i)=>{if(i===1){el.name='final-eyebrow';el.parent=get('.closing');}});many('.closing-mask-position,.closing-logo-position',2);many('.closing-label,.closing-contact h2,.closing-description,.closing-cta',4);many('.plan-row',4);
+  const toggles=many('[aria-controls="menu-dialog"]',2), services=many('.service',4), steps=many('.method-step',4);
+  many('[data-contact]',12).forEach(a=>a.setAttribute('href','#contact'));many('a[href="#contact"]',2);many('a[href="#contact"]:not(.footer-nav a),a[data-contact]',4);many('a[href="#contact"]:not(.footer-nav a)',2);many('[data-lines]',1);many('.eyebrow',2).forEach((el,i)=>{if(i===1){el.name='final-eyebrow';el.parent=get('.closing');}});many('.closing-mask-position,.closing-logo-position',2);many('.closing-label,.closing-contact h2,.closing-description,.closing-cta',4);many('.plan-row',4);
     const footerLinks=many('.footer-nav a',6);
   ['home','expertise','systems','experiencias','fechamento','contact'].forEach((id,i)=>footerLinks[i].setAttribute('data-section',id));
   many('.footer-main,.footer-bottom',2);
-  many('.pillar',3).forEach(row=>{row.querySelectorAll=s=>s==='.stack-layer'?Array.from({length:3},(_,i)=>row.querySelector(s+i)):[row.querySelector(s)];});
-  stacks.forEach((button,i)=>{button.parent=new Element('art'+i);button.parent.querySelector('.stack-layer-2').alt='panel'+i;});
   const timers=new Map(), raf=new Map(), timelines=[], entrances=[], colorTweens=[], ticks=new Set(), lenis=[], splitters=[];
   let seq=0, refreshes=0, observerDisconnected=false, cleanup, mmCallback;const triggerRefreshHandlers=new Set();
   const flags={motion:options.motion??true,desktop:options.desktop??true,tall:options.tall??true,touch:options.touch??false,closingRoom:options.closingRoom??true,closingMobile:options.closingMobile??false,mobileMotion:options.mobileMotion??false};
@@ -61,22 +59,22 @@ async function boot(options={}) {
   if(options.earlyLoad){window.emit('load');for(const fn of raf.values())fn();raf.clear();}
   await Promise.resolve();await Promise.resolve();await Promise.resolve();
   const flush=()=>{for(const fn of raf.values())fn();raf.clear();};
-  return {flushTimers(){const pending=[...timers.values()];timers.clear();pending.forEach(fn=>fn());},triggerRefreshHandlers,get,many,groups,doc,window,toggles,services,steps,stacks,footerLinks,timelines,entrances,colorTweens,blueSurface,lightSurface,setProbe:fn=>{probe=fn;},ticks,lenis,splitters,flags,mm,flush,context,raf,get refreshes(){return refreshes;},get disconnected(){return observerDisconnected;}};
+  return {flushTimers(){const pending=[...timers.values()];timers.clear();pending.forEach(fn=>fn());},triggerRefreshHandlers,get,many,groups,doc,window,toggles,services,steps,footerLinks,timelines,entrances,colorTweens,blueSurface,lightSurface,setProbe:fn=>{probe=fn;},ticks,lenis,splitters,flags,mm,flush,context,raf,get refreshes(){return refreshes;},get disconnected(){return observerDisconnected;}};
 }
 (async()=>{
   const cases=[];
   const check=(name,fn)=>{fn();cases.push(name);};
   const contactMessage='Olá, Vinicius. Vi seu site e gostaria de conversar sobre a estrutura comercial da minha empresa.';
   const whatsapp=await boot({whatsappNumber:'+1 (555) 555-0100'});
-  check('All thirteen conversion CTAs share the configured recipient and encoded message, with secure new tabs',()=>{
-    const links=whatsapp.groups.get('[data-contact]');assert.equal(links.length,13);
+  check('All twelve conversion CTAs share the configured recipient and encoded message, with secure new tabs',()=>{
+    const links=whatsapp.groups.get('[data-contact]');assert.equal(links.length,12);
     for(const link of links){const u=new URL(link.getAttribute('href'));assert.equal(u.hostname,'wa.me');assert.equal(u.pathname,'/15555550100');assert.equal(u.searchParams.get('text'),contactMessage);assert.equal(link.attrs.target,'_blank');assert.equal(link.attrs.rel,'noopener noreferrer');}
     assert(whatsapp.footerLinks.every(l=>l.getAttribute('href').startsWith('#')));
   });
   const officialUrl = 'https://wa.me/5531993806300?text=Ol%C3%A1,%20Vin%C3%ADcius!%20Vim%20pelo%20seu%20site%20e%20gostaria%20de%20entender%20como%20podemos%20organizar%20melhor%20nossa%20opera%C3%A7%C3%A3o.';
   const officialWhatsapp = await boot({whatsappUrl: officialUrl});
-  check('All thirteen conversion CTAs consume the exact official WhatsApp URL with target _blank and noopener noreferrer',()=>{
-    const links=officialWhatsapp.groups.get('[data-contact]');assert.equal(links.length,13);
+  check('All twelve conversion CTAs consume the exact official WhatsApp URL with target _blank and noopener noreferrer',()=>{
+    const links=officialWhatsapp.groups.get('[data-contact]');assert.equal(links.length,12);
     for(const link of links){
       assert.equal(link.getAttribute('href'), officialUrl);
       assert.equal(link.attrs.target,'_blank');
@@ -162,11 +160,7 @@ async function boot(options={}) {
     h.groups.get('a[href="#contact"]:not(.footer-nav a)')[0].emit('click',e);
     assert(e.prevented&&e.stopped);assert.equal(h.lenis[0].lastScroll.target,1530);
   });
-  check('Pillar numbers travel continuously from below to above with three grouped timelines',()=>{
-    const rows=h.timelines.filter(t=>t.opts?.scrollTrigger?.id?.startsWith('vf-pillar-'));
-    assert.equal(rows.length,3);
-    for(const t of rows){assert.equal(t.opts.scrollTrigger.start(),334);assert.equal(t.opts.scrollTrigger.end(),1334);const n=t.calls[0];assert.equal(n[2].yPercent,64);assert.equal(n[3].yPercent,-58);assert.equal(t.calls.filter(c=>c[0]==='fromTo').length,5);}
-  });
+  check('Removed indicator sequence creates no orphan timelines',()=>{assert(!h.timelines.some(t=>t.opts?.scrollTrigger?.id?.startsWith('vf-pillar-')));});
   check('Footer contact anchor reaches the completed pin, with a smooth scroll',()=>{
     h.footerLinks[5].emit('click',{button:0,preventDefault(){},stopPropagation(){}});
     assert.equal(h.lenis[0].lastScroll.target,1530);assert.equal(h.lenis[0].lastScroll.opts.duration,1.05);
@@ -183,7 +177,7 @@ async function boot(options={}) {
   h.mm.switch({tall:true});
   check('Height restoration rebuilds sticky scenes',()=>{assert(h.get('.method-track').classes.has('is-sequenced'));assert.equal(h.ticks.size,1);});
   h.mm.switch({desktop:false,mobileMotion:true});
-  check('Mobile keeps radial and opening sequences plus one roadmap sequence, while retaining native scroll',()=>{assert.equal(h.ticks.size,0);assert(h.lenis.at(-1).destroyed);assert(h.get('.method-track').classes.has('is-sequenced'));assert(h.get('.approach-track').classes.has('is-opening'));assert(h.get('.plan-track').classes.has('is-stacked'));assert(h.get('.pillars').classes.has('has-parallax'));});
+  check('Mobile keeps radial and opening sequences plus one roadmap sequence, while retaining native scroll',()=>{assert.equal(h.ticks.size,0);assert(h.lenis.at(-1).destroyed);assert(h.get('.method-track').classes.has('is-sequenced'));assert(h.get('.approach-track').classes.has('is-opening'));assert(h.get('.plan-track').classes.has('is-stacked'));});
   const roadmap=h.timelines.findLast(t=>t.opts?.scrollTrigger?.id==='vf-roadmap-mobile');
   check('Mobile roadmap states follow forward, backward and refreshed scroll positions',()=>{for(const [time,index] of [[0,0],[1.1,1],[2.1,2],[3.2,3],[1.2,1],[0,0]]){roadmap.now=time;roadmap.opts.onUpdate.call(roadmap);assert.deepEqual(h.groups.get('.plan-row').map(row=>row.attrs['aria-hidden']),[0,1,2,3].map(i=>String(i!==index)));}roadmap.now=4;roadmap.opts.scrollTrigger.onRefresh({animation:roadmap});assert.equal(h.groups.get('.plan-row')[3].attrs['aria-hidden'],'false');});
   h.mm.switch({desktop:true,mobileMotion:false,motion:true});h.mm.switch({motion:false});
@@ -199,7 +193,6 @@ async function boot(options={}) {
   }
   h=await boot({touch:true,desktop:false,mobileMotion:true});
   check('Touch stroke responds to pointerdown without consuming the CTA click',()=>{let prevented=0;h.services[0].emit('pointerdown');assert(h.services[0].classes.has('is-active'));h.services[0].emit('click',{preventDefault(){prevented++;}});assert.equal(prevented,0);h.services[0].emit('blur');assert(!h.services[0].classes.has('is-active'));});
-  check('Stack controls expose state and retain panel subject',()=>{h.stacks[0].emit('click');assert.equal(h.stacks[0].attrs['aria-expanded'],'true');assert.equal(h.stacks[0].attrs['aria-label'],'Fechar composição: panel0');h.stacks[0].emit('click');assert.equal(h.stacks[0].attrs['aria-label'],'Abrir composição: panel0');assert(!h.stacks[0].parent.classes.has('is-expanded'));});
   h=await boot({desktop:false,closingMobile:true});
   check('Mobile brand reveal keeps native scroll, smooth scrub damping and end hold buffer',()=>{
     const t=h.timelines.find(t=>t.opts?.scrollTrigger?.id==='vf-brand-finale');

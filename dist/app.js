@@ -114,15 +114,6 @@
     });
     listen(card, 'blur', () => card.classList.remove('is-active'));
   });
-  all('.stack-toggle').forEach(button => {
-    const subject = button.closest('.pillar-art').querySelector('.stack-layer-2').alt;
-    listen(button, 'click', () => {
-      const open = button.getAttribute('aria-expanded') !== 'true';
-      button.setAttribute('aria-expanded', String(open));
-      button.closest('.pillar-art').classList.toggle('is-expanded', open);
-      button.setAttribute('aria-label', (open ? 'Fechar' : 'Abrir') + ' composição: ' + subject);
-    });
-  });
   const floating = [$('.floating-nav'), $('.chat-link')];
   const railHome = $('.rail-home');
   let railFrame, railTween, railSurface;
@@ -316,24 +307,6 @@
       diagram.from('.system-hub', { scale: .7, transformOrigin: 'center center', opacity: 0, duration: .4, clearProps: 'transform,opacity' })
         .fromTo('.system-connections path', { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, autoRound: false, duration: .8, stagger: .1, clearProps: 'strokeDasharray,strokeDashoffset' }, .15)
         .from('.system-node', { opacity: 0, scale: .93, transformOrigin: 'center center', duration: .5, stagger: .12, clearProps: 'transform,opacity' }, .32);
-      $('.pillars').classList.add('has-parallax');
-      restores.push(() => $('.pillars').classList.remove('has-parallax'));
-      all('.pillar').forEach((row, index) => {
-        const number = row.querySelector('.pillar-number');
-        const motion = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: {
-          id: 'vf-pillar-' + index, trigger: row, start: () => documentTop(row) - innerHeight, end: () => documentTop(row) + row.offsetHeight,
-          scrub: desktop ? .45 : .25, invalidateOnRefresh: true
-        } });
-        // The glyph travels for the entire row interval, including its exit.
-        motion.fromTo(number, { yPercent: desktop ? 64 : 30, scale: 1.04 },
-          { yPercent: desktop ? -58 : -26, scale: .96, duration: 1 }, 0)
-          .fromTo(row, { '--rule-scale': .15 }, { '--rule-scale': 1, duration: .5 }, 0);
-        row.querySelectorAll('.stack-layer').forEach((layer, i) => {
-          motion.fromTo(layer, { yPercent: 11 + i * 4, rotation: [-9, 6, 1][i] },
-            { yPercent: -8 - i * 3, rotation: [-5, 3, -1][i], duration: 1 }, 0);
-        });
-      });
-
       // New method chapter: native sticky positioning, with one scroll timeline.
       const methodTrack = $('.method-track');
       const methodSteps = all('.method-step');
